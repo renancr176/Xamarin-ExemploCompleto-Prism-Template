@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.Controls.ProcessDefaultButton">
+  <ContentView.Content>
+      <StackLayout Orientation="Horizontal" 
+                   VerticalOptions="End"
+                   HorizontalOptions="CenterAndExpand">
+          <Button x:Name="FirstButton"
+                  Style="{StaticResource BtnInfo}"/>
+          <Button x:Name="SecondButton"
+                  Style="{StaticResource BtnInfo}"/>
+          <Button x:Name="MenuButton" 
+                  Style="{StaticResource BtnInfo}"/>
+        </StackLayout>
+  </ContentView.Content>
+</ContentView>

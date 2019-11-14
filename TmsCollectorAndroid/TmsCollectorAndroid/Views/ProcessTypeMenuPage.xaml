@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.ProcessTypeMenuPage"
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+             xmlns:controls="clr-namespace:TmsCollectorAndroid.Views.Controls;assembly=TmsCollectorAndroid">
+  
+    <StackLayout Padding="10">
+        <controls:Header Title="PROCESSOS"/>
+        <ListView ItemsSource="{Binding LvProcessos}">
+            <ListView.Behaviors>
+                <b:EventToCommandBehavior EventName="ItemTapped" 
+                                          Command="{Binding GoToProcessoCommand}"
+                                          EventArgsParameterPath="Item" />
+            </ListView.Behaviors>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout HorizontalOptions="CenterAndExpand"
+                                     VerticalOptions="CenterAndExpand">
+                            <Label Text="{Binding Nome}"
+                                   FontSize="Medium"
+                                   HorizontalTextAlignment="Center"
+                                   HorizontalOptions="CenterAndExpand" />
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <controls:Footer/>
+        <StackLayout Orientation="Horizontal"
+                     HorizontalOptions="CenterAndExpand">
+            <Button Text="Voltar" 
+                    Style="{StaticResource BtnInfo}"
+                    Command="{Binding VoltarCommand}"/>
+        </StackLayout>
+    </StackLayout>
+
+</ContentPage>

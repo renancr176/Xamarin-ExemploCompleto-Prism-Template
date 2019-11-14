@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29306.81
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TmsCollectorAndroid", "TmsCollectorAndroid\TmsCollectorAndroid\TmsCollectorAndroid.csproj", "{8C96F2E7-0760-4757-B716-D74413A91F9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TmsCollectorAndroid.Android", "TmsCollectorAndroid\TmsCollectorAndroid.Android\TmsCollectorAndroid.Android.csproj", "{099762C0-D7D9-4CD9-8776-CB7B177C6908}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalServices", "ExternalServices", "{F40DC0AA-EC2A-494F-A237-90FE2B19EB49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TmsCollectorAndroid.TmsApi", "TmsCollectorAndroid.TmsApi\TmsCollectorAndroid.TmsApi.csproj", "{89077AC5-8FE2-4035-B6D8-AF57B9AE6883}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C96F2E7-0760-4757-B716-D74413A91F9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C96F2E7-0760-4757-B716-D74413A91F9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C96F2E7-0760-4757-B716-D74413A91F9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C96F2E7-0760-4757-B716-D74413A91F9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{099762C0-D7D9-4CD9-8776-CB7B177C6908}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{099762C0-D7D9-4CD9-8776-CB7B177C6908}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{099762C0-D7D9-4CD9-8776-CB7B177C6908}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{099762C0-D7D9-4CD9-8776-CB7B177C6908}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{099762C0-D7D9-4CD9-8776-CB7B177C6908}.Release|Any CPU.Build.0 = Release|Any CPU
+		{099762C0-D7D9-4CD9-8776-CB7B177C6908}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{89077AC5-8FE2-4035-B6D8-AF57B9AE6883}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89077AC5-8FE2-4035-B6D8-AF57B9AE6883}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89077AC5-8FE2-4035-B6D8-AF57B9AE6883}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89077AC5-8FE2-4035-B6D8-AF57B9AE6883}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{89077AC5-8FE2-4035-B6D8-AF57B9AE6883} = {F40DC0AA-EC2A-494F-A237-90FE2B19EB49}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {01173F2C-C5C9-4555-9344-65880D0E1EB6}
+	EndGlobalSection
+EndGlobal

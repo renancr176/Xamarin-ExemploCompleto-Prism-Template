@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="TmsCollectorAndroid.Views.Controls.Header"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True">
+    <ContentView.Content>
+        <StackLayout>
+            <Grid MinimumHeightRequest="20"
+                Margin="0,0,10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Text="{Binding Unit}" 
+                       TextColor="{Binding UnitColor}"
+                       HorizontalTextAlignment="Start"
+                       Grid.Column="0"/>
+                <Label x:Name="HeaderTitle"
+                       HorizontalTextAlignment="Center"
+                       Grid.Column="1"/>
+                <Label Text="{Binding CompanyAcronym}"
+                       HorizontalTextAlignment="End"
+                       Grid.Column="2"/>
+            </Grid>
+            <BoxView HorizontalOptions="FillAndExpand"
+                     Color="DarkGray"
+                     HeightRequest="1"/>
+        </StackLayout>
+    </ContentView.Content>
+</ContentView>

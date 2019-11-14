@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.LoginPage"
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+             xmlns:behaviors="clr-namespace:TmsCollectorAndroid.Behaviors"
+             Title="{Binding Title}">
+
+    <StackLayout HorizontalOptions="FillAndExpand" 
+                 VerticalOptions="FillAndExpand"
+                 Margin="10">
+        <StackLayout VerticalOptions="StartAndExpand">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30*"/>
+                    <ColumnDefinition Width="70*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" 
+                       Grid.Column="0"
+                       Grid.ColumnSpan="2"
+                       Text="Unidade"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                <Entry Grid.Row="1" 
+                       Grid.Column="0" 
+                       x:Name="Unit"
+                       Keyboard="Numeric"
+                       Text="{Binding Model.Unit}">
+                    <Entry.Behaviors>
+                        <b:EventToCommandBehavior EventName="Unfocused"
+                                                  Command="{Binding UnitCompletedCommand}"/>
+                    </Entry.Behaviors>
+                </Entry>
+                <Entry Grid.Row="1"
+                       Grid.Column="1" 
+                       Margin="5,0,0,0"
+                       IsReadOnly="True"
+                       Text="{Binding Model.UnitDescription}"/>
+            </Grid>
+            <Label Text="Usuário"
+                   Style="{StaticResource LblFieldDescriptionBold}"/>
+            <Entry x:Name="UserName"
+                   Unfocused="UserName_OnUnfocused"
+                   IsEnabled="{Binding Model.UserNameIsEnabled}"
+                   Text="{Binding Model.UserName}">
+                <Entry.Behaviors>
+                    <behaviors:MaskedBehavior Mask="XXX.XXXXXXXXXXXXXXXXXXXX" />
+                </Entry.Behaviors>
+            </Entry>
+            <Label Text="Senha"
+                   Style="{StaticResource LblFieldDescriptionBold}"/>
+            <Entry x:Name="UserPassword" 
+                   IsPassword="True" 
+                   Unfocused="UserPassword_OnUnfocused"
+                   IsEnabled="{Binding Model.UserPasswordIsEnabled}"
+                   Text="{Binding Model.UserPassword}"/>
+        </StackLayout>
+        <StackLayout VerticalOptions="EndAndExpand">
+            <Label Text="URL"
+                   Style="{StaticResource LblFieldDescriptionBold}"/>
+            <Label Text="{Binding Url}"/>
+            <Label Text="Versão (WebService)"
+                   Style="{StaticResource LblFieldDescriptionBold}"/>
+            <Label Text="{Binding WebServiceVersion}"/>
+            <Label Text="Versão (Coletor)"
+                   Style="{StaticResource LblFieldDescriptionBold}"/>
+            <Label Text="{Binding CollectorVersion}"/>
+        </StackLayout>
+        <StackLayout VerticalOptions="EndAndExpand"
+                     HorizontalOptions="CenterAndExpand"
+                     Orientation="Horizontal">
+            <Button x:Name="BtnConfirmation"
+                    Text="Confirmar"
+                    Style="{StaticResource BtnInfo}"
+                    IsEnabled="{Binding Model.BtnConfirmationIsEnabled}"
+                    Command="{Binding ConfirmationCommand}"/>
+            <Button Text="Sair" 
+                    Style="{StaticResource BtnInfo}"
+                    Command="{Binding ExitCommand}"/>
+        </StackLayout>
+    </StackLayout>
+
+</ContentPage>

@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.PackingListLandingInputPage"
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+             xmlns:controls="clr-namespace:TmsCollectorAndroid.Views.Controls;assembly=TmsCollectorAndroid">
+
+    <StackLayout Padding="10">
+        <controls:Header Title="DESEMBARQUE"/>
+        <ScrollView>
+            <StackLayout>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition />
+                        <RowDefinition Height="25"/>
+                        <RowDefinition />
+                        <RowDefinition Height="25"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <!--region Row 0-->
+                    <Label Grid.Row="0" 
+                           Grid.Column="0"
+                           Text="Equipe"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <!--endregion-->
+                    <!--region Row 1-->
+                    <Entry Grid.Row="1"
+                           Grid.Column="0"
+                           x:Name="Team"
+                           IsReadOnly="{Binding Model.TeamIsReadOnly}"
+                           Text="{Binding Model.Team}">
+                        <Entry.Behaviors>
+                            <b:EventToCommandBehavior EventName="Unfocused"
+                                                      Command="{Binding TeamChangedCommand}"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1" 
+                           Grid.ColumnSpan="2"
+                           IsReadOnly="True"
+                           Text="{Binding Model.TeamDescription}"/>
+                    <!--endregion-->
+                    <!--region Row 2-->
+                    <Label Grid.Row="2"
+                           Grid.Column="0"
+                           Text="Frota"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <!--endregion-->
+                    <!--region Row 3-->
+                    <Entry Grid.Row="3" 
+                           Grid.Column="0"
+                           x:Name="CarNumber"
+                           Keyboard="Numeric"
+                           IsReadOnly="{Binding Model.CarIsReadOnly}"
+                           Text="{Binding Model.CarNumber}">
+                        <Entry.Behaviors>
+                            <b:EventToCommandBehavior EventName="Unfocused"
+                                                      Command="{Binding CarChangedCommand}"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Entry Grid.Row="3"
+                           Grid.Column="1" 
+                           Grid.ColumnSpan="2"
+                           IsReadOnly="True"
+                           Text="{Binding Model.VehicleDescription}"/>
+                    <!--endregion-->
+                    <!--region Row 4-->
+                    <Label Grid.Row="4" 
+                           Grid.Column="0"
+                           Text="Escala"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="4" 
+                           Grid.Column="1"
+                           Text="Data"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <!--endregion-->
+                    <!--region Row 5-->
+                    <Entry Grid.Row="5"
+                           Grid.Column="0" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.TrafficSchedule}"/>
+                    <Entry Grid.Row="5"
+                           Grid.Column="1"
+                           Grid.ColumnSpan="2"
+                           IsReadOnly="True"
+                           Text="{Binding Model.Date}"/>
+                    <!--endregion-->
+                </Grid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" 
+                           Grid.Column="0"
+                           Text="Linha"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0" 
+                           Grid.Column="1"
+                           Text="Total"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0" 
+                           Grid.Column="2"
+                           Text="Lidos"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="1"
+                           Grid.Column="0" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.Line}"/>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.PackAmount}"/>
+                    <Entry Grid.Row="1"
+                           Grid.Column="2" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.PackReading}"/>
+                </Grid>
+                <Label Text="Leitura"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+                <controls:BarcodeEntry x:Name="BarcodeEntry"/>
+            </StackLayout>
+        </ScrollView>
+        <controls:Footer />
+        <controls:ProcessDefaultButton x:Name="ProcessDefaultButton" 
+                                       FirstButtonText="Confirmar"/>
+    </StackLayout>
+
+</ContentPage>

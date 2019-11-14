@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.PackingListBoardingWeightViewPage"
+             xmlns:controls="clr-namespace:TmsCollectorAndroid.Views.Controls;assembly=TmsCollectorAndroid"
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms">
+
+    <StackLayout Padding="10">
+        <controls:Header Title="CAPACIDADE DE CARGA"/>
+        <ScrollView>
+            <StackLayout>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="33*"/>
+                        <ColumnDefinition Width="47*"/>
+                        <ColumnDefinition Width="20*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0"
+                           Grid.Column="0"
+                           Text="Frota"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0"
+                           Grid.Column="2"
+                           Text="UnD"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="1" 
+                           Grid.Column="0"
+                           Keyboard="Numeric"
+                           IsReadOnly="True"
+                           Text="{Binding Model.CarNumber}">
+                        <Entry.Behaviors>
+                            <b:EventToCommandBehavior EventName="Unfocused"
+                                                      Command="{Binding CarChangedCommand}"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.VehicleDescription}"/>
+                    <Entry Grid.Row="1"
+                           Grid.Column="2"
+                           IsReadOnly="True"
+                           Text="{Binding Model.UnitDestination}"/>
+                </Grid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" 
+                           Grid.Column="0"
+                           Text="Escala"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0" 
+                           Grid.Column="1"
+                           Text="Data"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="1"
+                           Grid.Column="0" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.TrafficSchedule}"/>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1"
+                           Grid.ColumnSpan="2"
+                           IsReadOnly="True"
+                           Text="{Binding Model.Date}"/>
+                </Grid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" 
+                           Grid.Column="0"
+                           Text="Linha"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0" 
+                           Grid.Column="1"
+                           Text="CTRC's"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0" 
+                           Grid.Column="2"
+                           Text="Volumes"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="1"
+                           Grid.Column="0" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.Line}"/>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1"
+                           IsReadOnly="True"
+                           Text="{Binding Model.PackAmount}"/>
+                    <Entry Grid.Row="1"
+                           Grid.Column="2" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.PackReading}"/>
+                </Grid>
+                <Label Text="Capacidade do Veículo"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+                <Entry IsReadOnly="True"
+                       Text="{Binding Model.VehicleTotalCapacity}"/>
+                <Label Text="Carga Proporcional Total"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+                <Entry IsReadOnly="True"
+                       Text="{Binding Model.PackinglistTotalProportionalWeight}"/>
+            </StackLayout>
+        </ScrollView>
+        <controls:Footer />
+        <controls:ProcessDefaultButton x:Name="ProcessDefaultButton" 
+                                       FirstButtonText="Voltar"
+                                       MenuButtonIsVisible="False"/>
+    </StackLayout>
+</ContentPage>

@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.ViewLackAmountPage"
+             xmlns:controls="clr-namespace:TmsCollectorAndroid.Views.Controls;assembly=TmsCollectorAndroid">
+
+    <StackLayout Padding="10">
+        <controls:Header Title="FALTAS DE VOLUMES"/>
+        <ScrollView>
+            <StackLayout>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="35*"/>
+                        <ColumnDefinition Width="65*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" 
+                           Grid.Column="0"
+                           Text="Veículo"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="1"
+                           Grid.Column="0"
+                           IsReadOnly="True"
+                           Text="{Binding Model.Vehicle}"/>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1"
+                           IsReadOnly="True"
+                           Text="{Binding Model.VehicleDescription}"/>
+
+                    <Label Grid.Row="2"
+                           Grid.Column="0"
+                           Grid.ColumnSpan="2"
+                           Text="Unidade de Destino"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="3" 
+                           Grid.Column="0"
+                           IsReadOnly="True"
+                           Text="{Binding Model.UnitDestination}"/>
+                    <Entry Grid.Row="3"
+                           Grid.Column="1" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.UnitDescription}"/>
+
+                    <Label Grid.Row="4" 
+                           Grid.Column="0"
+                           Grid.ColumnSpan="2"
+                           Text="Data"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="5"
+                           Grid.Column="0"
+                           Grid.ColumnSpan="2"
+                           IsReadOnly="True"
+                           Text="{Binding Model.Date}"/>
+                </Grid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition />
+                        <RowDefinition Height="25"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" 
+                           Grid.Column="0"
+                           Text="Escala"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0" 
+                           Grid.Column="1"
+                           Text="Linha"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="1"
+                           Grid.Column="0" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.TrafficSchedule}"/>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.Line}"/>
+
+                    <Label Grid.Row="2" 
+                           Grid.Column="0"
+                           Text="CTRC"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="2" 
+                           Grid.Column="1"
+                           Text="Qtd. Faltante"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="3"
+                           Grid.Column="0"
+                           IsReadOnly="True"
+                           Text="{Binding Model.BillOfLading}"/>
+                    <Entry Grid.Row="3"
+                           Grid.Column="1" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.AmoutUnConfirmed}"/>
+                </Grid>
+            </StackLayout>
+        </ScrollView>
+        <controls:Footer />
+        <controls:ProcessDefaultButton x:Name="ProcessDefaultButton" 
+                                       FirstButtonText="Ver Volumes"
+                                       SecondButtonText="Voltar"
+                                       MenuButtonIsVisible="False" />
+    </StackLayout>
+
+</ContentPage>

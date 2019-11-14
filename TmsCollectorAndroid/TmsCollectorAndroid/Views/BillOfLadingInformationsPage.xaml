@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.BillOfLadingInformationsPage"
+             xmlns:controls="clr-namespace:TmsCollectorAndroid.Views.Controls;assembly=TmsCollectorAndroid">
+
+    <StackLayout Padding="10">
+        <controls:Header Title="CONSULTA RÁPIDA"/>
+        <ScrollView VerticalOptions="CenterAndExpand">
+            <StackLayout>
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <!--region Row 0-->
+                    <Label Grid.Column="0" 
+                           Text="CT-e:"
+                           Style="{StaticResource LblFieldDescriptionBold}"
+                           HorizontalTextAlignment="End"/>
+                    <Label Grid.Column="1" 
+                           Grid.ColumnSpan="3"
+                           Text="{Binding Model.Cte}"/>
+                    <!--endregion-->
+                    <!--region Row 1-->
+                    <Label Grid.Row="1" 
+                           Grid.Column="0" 
+                           Text="Origem:"
+                           Style="{StaticResource LblFieldDescriptionBold}"
+                           HorizontalTextAlignment="End"/>
+                    <Label Grid.Row="1"
+                           Grid.Column="1"
+                           Text="{Binding Model.Origim}"/>
+                    <Label Grid.Row="1"
+                           Grid.Column="2" 
+                           Text="Destino:"
+                           Style="{StaticResource LblFieldDescriptionBold}"
+                           HorizontalTextAlignment="End"/>
+                    <Label Grid.Row="1"
+                           Grid.Column="3"
+                           Text="{Binding Model.Destination}"/>
+                    <!--endregion-->
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <!--region Row 0-->
+                    <Label Grid.Column="0" 
+                           Text="Nota:"
+                           Style="{StaticResource LblFieldDescriptionBold}"
+                           HorizontalTextAlignment="End"/>
+                    <Label Grid.Column="1" 
+                           Grid.ColumnSpan="3"
+                           Text="{Binding Model.Invoice}"/>
+                    <!--endregion-->
+                    <!--region Row 1-->
+                    <Label Grid.Row="1" 
+                           Grid.Column="0" 
+                           Text="VOL:"
+                           Style="{StaticResource LblFieldDescriptionBold}"
+                           HorizontalTextAlignment="End"/>
+                    <Label Grid.Row="1"
+                           Grid.Column="1"
+                           Text="{Binding Model.Vol}"/>
+                    <Label Grid.Row="1"
+                           Grid.Column="2" 
+                           Text="Peso VOL:"
+                           Style="{StaticResource LblFieldDescriptionBold}"
+                           HorizontalTextAlignment="End"/>
+                    <Label Grid.Row="1"
+                           Grid.Column="3"
+                           Text="{Binding Model.WeightVol}"/>
+                    <!--endregion-->
+                </Grid>
+
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <!--region Row 0-->
+                    <Label Grid.Column="0" 
+                           Text="Volumes Total:"
+                           Style="{StaticResource LblFieldDescriptionBold}"
+                           HorizontalTextAlignment="End"/>
+                    <Label Grid.Column="1" 
+                           Grid.ColumnSpan="3"
+                           Text="{Binding Model.TotalVolume}"/>
+                    <!--endregion-->
+                    <!--region Row 1-->
+                    <Label Grid.Row="1" 
+                           Grid.Column="0" 
+                           Text="Peso Total Base:"
+                           Style="{StaticResource LblFieldDescriptionBold}"
+                           HorizontalTextAlignment="End"/>
+                    <Label Grid.Row="1" 
+                           Grid.Column="1" 
+                           Grid.ColumnSpan="3"
+                           Text="{Binding Model.TotalBaseWeight}"/>
+                    <!--endregion-->
+                    <!--region Row 2-->
+                    <Label Grid.Row="2" 
+                           Grid.Column="0" 
+                           Text="Peso Total Real:"
+                           Style="{StaticResource LblFieldDescriptionBold}"
+                           HorizontalTextAlignment="End"/>
+                    <Label Grid.Row="2" 
+                           Grid.Column="1" 
+                           Grid.ColumnSpan="3"
+                           Text="{Binding Model.TotalRealWeight}"/>
+                    <!--endregion-->
+                    <!--region Row 3-->
+                    <Label Grid.Row="3" 
+                           Grid.Column="0" 
+                           Text="Peso Total Cubicado:"
+                           Style="{StaticResource LblFieldDescriptionBold}"
+                           HorizontalTextAlignment="End"/>
+                    <Label Grid.Row="3" 
+                           Grid.Column="1" 
+                           Grid.ColumnSpan="3"
+                           Text="{Binding Model.TotalWeightCubicated}"/>
+                    <!--endregion-->
+                </Grid>
+                <Label Text="Leitura"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+                <controls:BarcodeEntry x:Name="BarcodeEntry"/>
+            </StackLayout>
+        </ScrollView>
+        <StackLayout VerticalOptions="End">
+            <controls:Footer />
+            <controls:ProcessDefaultButton x:Name="ProcessDefaultButton" 
+                                           FirstButtonText="Confirmar"/>
+        </StackLayout>
+    </StackLayout>
+
+</ContentPage>

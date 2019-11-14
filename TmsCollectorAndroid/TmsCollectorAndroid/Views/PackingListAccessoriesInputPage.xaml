@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.PackingListAccessoriesInputPage"
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+             xmlns:controls="clr-namespace:TmsCollectorAndroid.Views.Controls;assembly=TmsCollectorAndroid">
+
+    <StackLayout Padding="10">
+        <controls:Header Title="ETIQUETA MÃE"/>
+        <ScrollView>
+            <StackLayout>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition />
+                        <RowDefinition Height="25"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <!--region Row 0-->
+                    <Label Grid.Row="0" 
+                           Grid.Column="0"
+                           Text="Destino"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0" 
+                           Grid.Column="1"
+                           Text="Nr. Interno"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <!--endregion-->
+                    <!--region Row 1-->
+                    <Entry Grid.Row="1"
+                           Grid.Column="0"
+                           x:Name="Destination"
+                           Keyboard="Numeric"
+                           IsReadOnly="{Binding Model.DestinationIsReadOnly}"
+                           Text="{Binding Model.Destination}">
+                        <Entry.Behaviors>
+                            <b:EventToCommandBehavior EventName="Unfocused"
+                                                      Command="{Binding DestinationChangedCommand}"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1" 
+                           Grid.ColumnSpan="2"
+                           Keyboard="Numeric"
+                           IsReadOnly="{Binding Model.CobolNumberIsReadOnly}"
+                           Text="{Binding Model.CobolNumber}"/>
+                    <!--endregion-->
+                    <!--region Row 2-->
+                    <Label Grid.Row="2"
+                           Grid.Column="0"
+                           Text="Acessório"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <!--endregion-->
+                    <!--region Row 3-->
+                    <Entry Grid.Row="3" 
+                           Grid.Column="0"
+                           x:Name="Accessory"
+                           IsReadOnly="{Binding Model.AccessoryIsReadOnly}"
+                           Text="{Binding Model.Accessory}">
+                        <Entry.Behaviors>
+                            <b:EventToCommandBehavior EventName="Unfocused"
+                                                      Command="{Binding AccessoryChangedCommand}"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Entry Grid.Row="3"
+                           Grid.Column="1" 
+                           Grid.ColumnSpan="2"
+                           IsReadOnly="True"
+                           Text="{Binding Model.AccessoryDescription}"/>
+                    <!--endregion-->
+                </Grid>
+                <Label Text="CRTC's Incluidos"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+                <Entry IsReadOnly="True"
+                       Text="{Binding Model.Ctrc}"/>
+                <Label Text="Volumes Incluidos"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+                <Entry IsReadOnly="True"
+                       Text="{Binding Model.Pack}"/>
+                <Label Text="Leitura"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+                <controls:BarcodeEntry x:Name="BarcodeEntry"/>
+            </StackLayout>
+        </ScrollView>
+        <controls:Footer />
+        <controls:ProcessDefaultButton x:Name="ProcessDefaultButton" 
+                                       FirstButtonText="Confirmar"/>
+    </StackLayout>
+
+</ContentPage>

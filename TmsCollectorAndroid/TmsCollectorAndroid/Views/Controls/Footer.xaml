@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="TmsCollectorAndroid.Views.Controls.Footer"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True">
+  <ContentView.Content>
+      <StackLayout>
+          <BoxView HorizontalOptions="FillAndExpand"
+                   Color="DarkGray"
+                   HeightRequest="1"/>
+          <StackLayout Orientation="Horizontal">
+                <Label Text="{Binding UserName}"
+                       HorizontalOptions="FillAndExpand"/>
+                <Label Text="{Binding Date}" 
+                       HorizontalOptions="End"/>
+          </StackLayout>
+      </StackLayout>
+    </ContentView.Content>
+</ContentView>

@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.UniversalLandingPage"
+             xmlns:controls="clr-namespace:TmsCollectorAndroid.Views.Controls;assembly=TmsCollectorAndroid">
+
+    <StackLayout Padding="10">
+        <controls:Header Title="DESEMB. UNIVESAL"/>
+        <ScrollView VerticalOptions="CenterAndExpand">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="30*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" 
+                       Grid.Column="0"
+                       Grid.ColumnSpan="3"
+                       Text="Leitura"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+                <controls:BarcodeEntry Grid.Row="1"
+                                       Grid.Column="0"
+                                       Grid.ColumnSpan="3" 
+                                       x:Name="BarcodeEntry"
+                                       Unfocused="BarcodeEntry_OnUnfocused"/>
+
+                <Label Grid.Row="2"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="3"
+                       Text="CRTC"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                <Entry Grid.Row="3"
+                       Grid.Column="0"
+                       x:Name="Number"
+                       Keyboard="Numeric"
+                       Unfocused="Number_OnUnfocused"
+                       IsReadOnly="{Binding Model.CtrcIsReadOnly}"
+                       Text="{Binding Model.Number}"/>
+                <Entry Grid.Row="3"
+                       Grid.Column="1"
+                       x:Name="Digit"
+                       MaxLength="1"
+                       Unfocused="Digit_OnUnfocused"
+                       IsReadOnly="{Binding Model.CtrcIsReadOnly}"
+                       Text="{Binding Model.Digit}"/>
+                <Entry Grid.Row="3"
+                       Grid.Column="2"
+                       x:Name="UnitEmission"
+                       Keyboard="Numeric"
+                       Unfocused="UnitEmission_OnUnfocused"
+                       IsReadOnly="{Binding Model.CtrcIsReadOnly}"
+                       Text="{Binding Model.UnitEmission}"/>
+
+                <Label Grid.Row="4"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="3"
+                       Text="{Binding Model.LblReadVolumesMissingVolumes}"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                <ListView Grid.Row="5"
+                          Grid.Column="0"
+                          Grid.ColumnSpan="3"
+                          ItemsSource="{Binding Model.PackingListDetailViewInfo}"
+                          HasUnevenRows="True"
+                          IsEnabled="{Binding Model.TreeIsEnabled}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <StackLayout>
+                                        <Label Text="{Binding BillOfLading}"
+                                               VerticalTextAlignment="Center"
+                                               Style="{StaticResource LblFieldDescriptionBold}"
+                                               FontSize="Large"/>
+                                        <ListView ItemsSource="{Binding PacksUnConfirmed}"
+                                                  HeightRequest="{Binding ListViewHeight}"
+                                                  SeparatorVisibility="None"
+                                                  SeparatorColor="Transparent">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <ViewCell>
+                                                        <StackLayout Margin="20,2,2,2"
+                                                                     Orientation="Horizontal">
+                                                            <Label Text="{Binding TreeDescription}" 
+                                                                   VerticalTextAlignment="Center"
+                                                                   Style="{StaticResource LblFieldDescriptionBold}"
+                                                                   FontSize="Medium"/>
+                                                        </StackLayout>
+                                                    </ViewCell>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </StackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+            </Grid>
+        </ScrollView>
+        <StackLayout VerticalOptions="End">
+            <controls:Footer />
+            <controls:ProcessDefaultButton x:Name="ProcessDefaultButton" 
+                                           FirstButtonText="Confirmar"/>
+        </StackLayout>
+    </StackLayout>
+
+</ContentPage>

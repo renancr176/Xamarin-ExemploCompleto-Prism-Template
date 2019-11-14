@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.PackingListBoardingInputPage"
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+             xmlns:controls="clr-namespace:TmsCollectorAndroid.Views.Controls;assembly=TmsCollectorAndroid">
+
+    <StackLayout Padding="10">
+        <controls:Header x:Name="Header"/>
+        <ScrollView>
+            <StackLayout>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="33*"/>
+                        <ColumnDefinition Width="47*"/>
+                        <ColumnDefinition Width="20*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" 
+                           Grid.Column="0"
+                           Text="Equipe"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="1"
+                           Grid.Column="0"
+                           x:Name="Team"
+                           IsReadOnly="{Binding Model.TeamIsReadOnly}"
+                           Text="{Binding Model.Team}">
+                        <Entry.Behaviors>
+                            <b:EventToCommandBehavior EventName="Unfocused"
+                                                      Command="{Binding TeamChangedCommand}"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1" 
+                           Grid.ColumnSpan="2"
+                           IsReadOnly="True"
+                           Text="{Binding Model.TeamDescription}"/>
+
+                    <!--#region Car Number Line-->
+                    <Label Grid.Row="2"
+                           Grid.Column="0"
+                           Text="Frota"
+                           IsVisible="{Binding Model.CarNumberLineIsVisible}"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="2"
+                           Grid.Column="2"
+                           Text="UnD"
+                           IsVisible="{Binding Model.CarNumberLineIsVisible}"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="3" 
+                           Grid.Column="0"
+                           Keyboard="Numeric"
+                           x:Name="CarNumber"
+                           IsVisible="{Binding Model.CarNumberLineIsVisible}"
+                           IsReadOnly="{Binding Model.CarNumberIsReadOnly}"
+                           Text="{Binding Model.CarNumber}">
+                        <Entry.Behaviors>
+                            <b:EventToCommandBehavior EventName="Unfocused"
+                                                      Command="{Binding CarChangedCommand}"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Entry Grid.Row="3"
+                           Grid.Column="1" 
+                           IsReadOnly="True"
+                           IsVisible="{Binding Model.CarNumberLineIsVisible}"
+                           Text="{Binding Model.VehicleDescription}"/>
+                    <Entry Grid.Row="3"
+                           Grid.Column="2"
+                           IsReadOnly="True"
+                           IsVisible="{Binding Model.CarNumberLineIsVisible}"
+                           Text="{Binding Model.UnitDestination}"/>
+                    <!--#endregion-->
+
+                    <!--#region Unit Line-->
+                    <Label Grid.Row="2"
+                           Grid.Column="0"
+                           Grid.ColumnSpan="3"
+                           Text="Unidade de Destino"
+                           IsVisible="{Binding Model.UnitLineIsVisible}"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="3"
+                           Grid.Column="0"
+                           IsReadOnly="True"
+                           IsVisible="{Binding Model.UnitLineIsVisible}"
+                           Text="{Binding Model.Unit}"/>
+                    <Entry Grid.Row="3"
+                           Grid.Column="1"
+                           Grid.ColumnSpan="2"
+                           IsReadOnly="True"
+                           IsVisible="{Binding Model.UnitLineIsVisible}"
+                           Text="{Binding Model.UnitDestination}"/>
+                    <!--#endregion-->
+                </Grid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" 
+                           Grid.Column="0"
+                           Text="Escala"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0" 
+                           Grid.Column="1"
+                           Text="Data"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="1"
+                           Grid.Column="0" 
+                           x:Name="TrafficSchedule"
+                           IsReadOnly="True"
+                           Text="{Binding Model.TrafficSchedule}"/>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1"
+                           Grid.ColumnSpan="2"
+                           x:Name="Date"
+                           IsReadOnly="True"
+                           Text="{Binding Model.Date}"/>
+                </Grid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" 
+                           Grid.Column="0"
+                           Text="Linha"
+                           IsVisible="{Binding Model.CarNumberLineIsVisible}"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0" 
+                           Grid.Column="0"
+                           Text="Acessórios"
+                           IsVisible="{Binding Model.UnitLineIsVisible}"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0" 
+                           Grid.Column="1"
+                           Text="CTRC's"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0" 
+                           Grid.Column="2"
+                           Text="Volumes"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="1"
+                           Grid.Column="0" 
+                           IsReadOnly="True"
+                           IsVisible="{Binding Model.CarNumberLineIsVisible}"
+                           Text="{Binding Model.Line}"/>
+                    <Entry Grid.Row="1"
+                           Grid.Column="0" 
+                           IsReadOnly="True"
+                           IsVisible="{Binding Model.UnitLineIsVisible}"
+                           Text="{Binding Model.TransportAccessoriesAmount}"/>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1"
+                           x:Name="Ctrcs"
+                           IsReadOnly="True"
+                           Text="{Binding Model.PackAmount}"/>
+                    <Entry Grid.Row="1"
+                           Grid.Column="2" 
+                           x:Name="PackReading"
+                           IsReadOnly="True"
+                           Text="{Binding Model.PackReading}"/>
+                </Grid>
+                <Label Text="Leitura"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+                <controls:BarcodeEntry x:Name="BarcodeEntry"/>
+            </StackLayout>
+        </ScrollView>
+        <controls:Footer />
+        <controls:ProcessDefaultButton x:Name="ProcessDefaultButton" 
+                                       FirstButtonText="Confirmar"/>
+    </StackLayout>
+</ContentPage>

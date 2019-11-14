@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<prism:PrismApplication xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="clr-namespace:Prism.Unity;assembly=Prism.Unity.Forms"
+             x:Class="TmsCollectorAndroid.App">
+	<Application.Resources>
+
+        <ResourceDictionary>
+            <!--region Disabled Inputs Effect-->
+            <Style TargetType="Entry">
+                <Style.Triggers>
+                    <Trigger TargetType="Entry" Property="IsEnabled" Value="False">
+                        <Setter Property="BackgroundColor" Value="#CEE7EF" />
+                    </Trigger>
+                    <Trigger TargetType="Entry" Property="IsReadOnly" Value="True">
+                        <Setter Property="BackgroundColor" Value="#CEE7EF" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="Editor">
+                <Style.Triggers>
+                    <Trigger TargetType="Editor" Property="IsEnabled" Value="False">
+                        <Setter Property="BackgroundColor" Value="#CEE7EF" />
+                    </Trigger>
+                    <Trigger TargetType="Editor" Property="IsReadOnly" Value="True">
+                        <Setter Property="BackgroundColor" Value="#CEE7EF" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="DatePicker">
+                <Style.Triggers>
+                    <Trigger TargetType="DatePicker" Property="IsEnabled" Value="False">
+                        <Setter Property="BackgroundColor" Value="#CEE7EF" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="TimePicker">
+                <Style.Triggers>
+                    <Trigger TargetType="TimePicker" Property="IsEnabled" Value="False">
+                        <Setter Property="BackgroundColor" Value="#CEE7EF" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="ListView">
+                <Style.Triggers>
+                    <Trigger TargetType="ListView" Property="IsEnabled" Value="False">
+                        <Setter Property="BackgroundColor" Value="#CEE7EF" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <!--endregion-->
+            <!--region Labels-->
+            <Style TargetType="Label" x:Key="LblFieldDescriptionBold">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+            <Style TargetType="Label" x:Key="TextPrimary">
+                <Setter Property="TextColor" Value="#007bff"></Setter>
+            </Style>
+            <Style TargetType="Label" x:Key="TextSuccess">
+                <Setter Property="TextColor" Value="#28a745"></Setter>
+            </Style>
+            <Style TargetType="Label" x:Key="TextInfo">
+                <Setter Property="TextColor" Value="#17a2b8"></Setter>
+            </Style>
+            <Style TargetType="Label" x:Key="TextWarning">
+                <Setter Property="TextColor" Value="#ffc107"></Setter>
+            </Style>
+            <Style TargetType="Label" x:Key="TextDanger">
+                <Setter Property="TextColor" Value="#dc3545"></Setter>
+            </Style>
+            <!--endregion-->
+            <!--region Alerts-->
+            <Style TargetType="StackLayout" x:Key="AlertPrimary">
+                <Setter Property="Padding" Value="10"></Setter>
+                <Setter Property="BackgroundColor" Value="#cce5ff"></Setter>
+            </Style>
+            <Style TargetType="Label" x:Key="AlertPrimaryLabel">
+                <Setter Property="TextColor" Value="#004085"></Setter>
+            </Style>
+            <Style TargetType="StackLayout" x:Key="AlertSuccess">
+                <Setter Property="Padding" Value="10"></Setter>
+                <Setter Property="BackgroundColor" Value="#d4edda"></Setter>
+            </Style>
+            <Style TargetType="Label" x:Key="AlertSuccessLabel">
+                <Setter Property="TextColor" Value="#155724"></Setter>
+            </Style>
+            <Style TargetType="StackLayout" x:Key="AlertDanger">
+                <Setter Property="Padding" Value="10"></Setter>
+                <Setter Property="BackgroundColor" Value="#f8d7da"></Setter>
+            </Style>
+            <Style TargetType="Label" x:Key="AlertDangerLabel">
+                <Setter Property="TextColor" Value="#721c24"></Setter>
+            </Style>
+            <Style TargetType="StackLayout" x:Key="AlertWarning">
+                <Setter Property="Padding" Value="10"></Setter>
+                <Setter Property="BackgroundColor" Value="#fff3cd"></Setter>
+            </Style>
+            <Style TargetType="Label" x:Key="AlertWarningLabel">
+                <Setter Property="TextColor" Value="#856404"></Setter>
+            </Style>
+            <Style TargetType="StackLayout" x:Key="AlertInfo">
+                <Setter Property="Padding" Value="10"></Setter>
+                <Setter Property="BackgroundColor" Value="#d1ecf1"></Setter>
+            </Style>
+            <Style TargetType="Label" x:Key="AlertInfoLabel">
+                <Setter Property="TextColor" Value="#0c5460"></Setter>
+            </Style>
+            <!--endregion-->
+            <!--region Buttons-->
+            <Style TargetType="Button" x:Key="Btn">
+                <Setter Property="Margin" Value="5"></Setter>
+                <Setter Property="CornerRadius" Value="5"></Setter>
+            </Style>
+            <Style TargetType="Button" x:Key="BtnPrimary" BasedOn="{StaticResource Btn}">
+                <Setter Property="BackgroundColor" Value="#007bff"></Setter>
+                <Setter Property="TextColor" Value="White"></Setter>
+            </Style>
+            <Style TargetType="Button" x:Key="BtnSuccess" BasedOn="{StaticResource Btn}">
+                <Setter Property="BackgroundColor" Value="#28a745"></Setter>
+                <Setter Property="TextColor" Value="White"></Setter>
+            </Style>
+            <Style TargetType="Button" x:Key="BtnDanger" BasedOn="{StaticResource Btn}">
+                <Setter Property="BackgroundColor" Value="#dc3545"></Setter>
+                <Setter Property="TextColor" Value="White"></Setter>
+            </Style>
+            <Style TargetType="Button" x:Key="BtnWarning" BasedOn="{StaticResource Btn}">
+                <Setter Property="BackgroundColor" Value="#ffc107"></Setter>
+                <Setter Property="TextColor" Value="#212529"></Setter>
+            </Style>
+            <Style TargetType="Button" x:Key="BtnInfo" BasedOn="{StaticResource Btn}">
+                <Setter Property="BackgroundColor" Value="#17a2b8"></Setter>
+                <Setter Property="TextColor" Value="White"></Setter>
+            </Style>
+            <!--endregion-->
+        </ResourceDictionary>
+
+    </Application.Resources>
+</prism:PrismApplication>

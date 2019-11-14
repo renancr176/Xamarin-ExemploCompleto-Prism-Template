@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.PacksDetailViewPage"
+             xmlns:controls="clr-namespace:TmsCollectorAndroid.Views.Controls;assembly=TmsCollectorAndroid"
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms">
+    <StackLayout Padding="10">
+        <controls:Header Title="IMPRESSÃO ETIQUETAS"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Row="0" 
+                    Grid.Column="0"
+                    Style="{StaticResource BtnInfo}" 
+                    Text="Marcar Todos"
+                    Command="{Binding CheckAllItensCommand}"/>
+            <Button Grid.Row="0" 
+                    Grid.Column="1"
+                    Style="{StaticResource BtnInfo}" 
+                    Text="Desmarcar Todos"
+                    Command="{Binding UnCheckAllItensCommand}"/>
+
+            <Label Grid.Row="1" 
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   Style="{StaticResource TextPrimary}"
+                   FontSize="Large"
+                   Text="{Binding Model.Ctrc}"/>
+
+            <ListView Grid.Row="2" 
+                      Grid.Column="0"
+                      Grid.ColumnSpan="2"
+                      x:Name="LvBillOfLadingPack"
+                      ItemsSource="{Binding Model.BillOfLadingPackLvItems}"
+                      ItemSelected="LvBillOfLadingPack_OnItemSelected">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Label Grid.Column="0" 
+                                       Text="{Binding Text}"
+                                       HorizontalOptions="EndAndExpand"
+                                       VerticalTextAlignment="Center"
+                                       Style="{StaticResource LblFieldDescriptionBold}"/>
+                                <Switch Grid.Column="1" 
+                                        IsToggled="{Binding Checked}"
+                                        Toggled="Switch_OnChanged"
+                                        HorizontalOptions="StartAndExpand"/>
+                            </Grid>
+                        </ViewCell>
+                        <!--<SwitchCell Text="{Binding Text}" 
+                                    On="{Binding Checked}"
+                                    OnChanged="Switch_OnChanged"/>-->
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <StackLayout Grid.Row="3"
+                         Grid.Column="0"
+                         Grid.ColumnSpan="2"
+                         Orientation="Horizontal">
+                <Label Style="{StaticResource LblFieldDescriptionBold}" 
+                       Text="Qtde Selecionada:"
+                       FontSize="Medium"/> 
+                <Label Text="{Binding Model.AmountSelected}"
+                       VerticalTextAlignment="Center"
+                       Style="{StaticResource TextSuccess}"
+                       FontAttributes="Bold"
+                       FontSize="Medium"/>
+            </StackLayout>
+        </Grid>
+        <controls:Footer />
+        <controls:ProcessDefaultButton x:Name="ProcessDefaultButton" 
+                                       FirstButtonText="Confirmar"
+                                       SecondButtonText="Voltar"
+                                       MenuButtonIsVisible="False"/>
+    </StackLayout>
+</ContentPage>

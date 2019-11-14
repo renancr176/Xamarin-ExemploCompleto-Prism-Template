@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.ViewLackDetailPage"
+             xmlns:controls="clr-namespace:TmsCollectorAndroid.Views.Controls;assembly=TmsCollectorAndroid">
+
+    <StackLayout Padding="10">
+        <controls:Header x:Name="Header"/>
+        <ListView ItemsSource="{Binding PackingListDetailViewInfo}"
+                  HasUnevenRows="True">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout>
+                            <Label Text="{Binding BillOfLading}"
+                                   VerticalTextAlignment="Center"
+                                   Style="{StaticResource LblFieldDescriptionBold}"
+                                   FontSize="Large"/>
+                            <ListView ItemsSource="{Binding PacksUnConfirmed}"
+                                      HeightRequest="{Binding ListViewHeight}"
+                                      SeparatorVisibility="None"
+                                      SeparatorColor="Transparent">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <ViewCell>
+                                            <StackLayout Margin="20,2,2,2"
+                                                         Orientation="Horizontal">
+                                                <Label Text="{Binding TreeDescription}" 
+                                                       VerticalTextAlignment="Center"
+                                                       Style="{StaticResource LblFieldDescriptionBold}"
+                                                       FontSize="Medium"/>
+                                            </StackLayout>
+                                        </ViewCell>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <controls:Footer />
+        <controls:ProcessDefaultButton x:Name="ProcessDefaultButton" 
+                                       FirstButtonText="Voltar"
+                                       MenuButtonIsVisible="False" />
+    </StackLayout>
+
+</ContentPage>

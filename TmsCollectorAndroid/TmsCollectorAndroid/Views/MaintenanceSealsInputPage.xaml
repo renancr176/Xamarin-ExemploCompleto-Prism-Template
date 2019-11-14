@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.MaintenanceSealsInputPage"
+             xmlns:controls="clr-namespace:TmsCollectorAndroid.Views.Controls;assembly=TmsCollectorAndroid"
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms">
+
+    <StackLayout Padding="10">
+        <controls:Header Title="LACRE"/>
+        <ScrollView>
+            <StackLayout>
+                <Label Text="{Binding Model.Message}"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+                <Entry x:Name="Seal" 
+                       Text="{Binding Model.LvSeals}">
+                    <Entry.Behaviors>
+                        <b:EventToCommandBehavior EventName="Unfocused"
+                                                  Command="{Binding SealChangedCommand}"/>
+                    </Entry.Behaviors>
+                </Entry>
+                <ListView ItemsSource="{Binding Model.Seals}">
+                    <ListView.Header>
+                        <Label Text="Lacre"
+                               Style="{StaticResource LblFieldDescriptionBold}"/>
+                    </ListView.Header>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Label Text="{Binding .}"/>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+        </ScrollView>
+        <controls:Footer />
+        <controls:ProcessDefaultButton x:Name="ProcessDefaultButton" 
+                                       FirstButtonText="Confirmar"
+                                       SecondButtonText="Cancelar"
+                                       MenuButtonIsVisible="False"/>
+    </StackLayout>
+
+</ContentPage>

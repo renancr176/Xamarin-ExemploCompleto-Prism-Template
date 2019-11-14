@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="TmsCollectorAndroid.Views.PackingListDeliveryReturnInputPage"
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+             xmlns:controls="clr-namespace:TmsCollectorAndroid.Views.Controls;assembly=TmsCollectorAndroid">
+
+    <StackLayout Padding="10">
+        <controls:Header Title="ENTREGA RETORNO"/>
+        <ScrollView>
+            <StackLayout>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="80"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" 
+                           Grid.Column="0"
+                           Text="Romaneio"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="1"
+                           Grid.Column="0"
+                           x:Name="PackingListNumber"
+                           Keyboard="Numeric"
+                           IsReadOnly="{Binding Model.PackingListNumberIsReadOnly}"
+                           Text="{Binding Model.PackingListNumber}">
+                        <Entry.Behaviors>
+                            <b:EventToCommandBehavior EventName="Unfocused"
+                                                      Command="{Binding PackingListNumberChangedCommand}"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1"
+                           x:Name="PackingListDigit"
+                           Keyboard="Numeric"
+                           IsReadOnly="{Binding Model.PackingListDigitIsReadOnly}"
+                           Text="{Binding Model.PackingListDigit}">
+                        <Entry.Behaviors>
+                            <b:EventToCommandBehavior EventName="Unfocused"
+                                                      Command="{Binding PackingListDigitChangedCommand}"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                </Grid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" 
+                           Grid.Column="0"
+                           Text="Data"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0" 
+                           Grid.Column="1"
+                           Text="Hora"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <controls:DateEntry Grid.Row="1"
+                           Grid.Column="0"
+                           x:Name="Date"
+                           Unfocused="Date_OnUnfocused"/>
+                    <controls:TimeEntry Grid.Row="1"
+                           Grid.Column="1"
+                           x:Name="Time"
+                           Unfocused="Time_OnUnfocused"/>
+                </Grid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition />
+                        <RowDefinition Height="25"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0"
+                           Grid.Column="0"
+                           Text="Motorista"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="1" 
+                           Grid.Column="0"
+                           x:Name="Driver"
+                           Keyboard="Numeric"
+                           IsReadOnly="{Binding Model.DriverIsReadOnly}"
+                           Text="{Binding Model.Driver}">
+                        <Entry.Behaviors>
+                            <b:EventToCommandBehavior EventName="Unfocused"
+                                                      Command="{Binding DriverChangedCommand}"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1" 
+                           Grid.ColumnSpan="2"
+                           IsReadOnly="True"
+                           Text="{Binding Model.DriverDescription}"/>
+
+                    <Label Grid.Row="2"
+                           Grid.Column="0"
+                           Text="Frota"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="3" 
+                           Grid.Column="0"
+                           x:Name="Vehicle"
+                           IsReadOnly="{Binding Model.VehicleIsReadOnly}"
+                           Text="{Binding Model.Vehicle}">
+                        <Entry.Behaviors>
+                            <b:EventToCommandBehavior EventName="Unfocused"
+                                                      Command="{Binding VehicleChangedCommand}"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Entry Grid.Row="3"
+                           Grid.Column="1" 
+                           Grid.ColumnSpan="2"
+                           IsReadOnly="True"
+                           Text="{Binding Model.VehicleView}"/>
+                </Grid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0"
+                           Grid.Column="0"
+                           Text="CRTC's"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+                    <Label Grid.Row="0"
+                           Grid.Column="1"
+                           Text="Volumes"
+                           Style="{StaticResource LblFieldDescriptionBold}"/>
+
+                    <Entry Grid.Row="1"
+                           Grid.Column="0" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.BolAmountView}"/>
+                    <Entry Grid.Row="1"
+                           Grid.Column="1" 
+                           IsReadOnly="True"
+                           Text="{Binding Model.PacksAmountView}"/>
+                </Grid>
+                <Label Text="Leitura"
+                       Style="{StaticResource LblFieldDescriptionBold}"/>
+                <controls:BarcodeEntry x:Name="BarcodeEntry"/>
+            </StackLayout>
+        </ScrollView>
+        <controls:Footer />
+        <controls:ProcessDefaultButton x:Name="ProcessDefaultButton" 
+                                       FirstButtonText="Confirmar"/>
+    </StackLayout>
+
+</ContentPage>
