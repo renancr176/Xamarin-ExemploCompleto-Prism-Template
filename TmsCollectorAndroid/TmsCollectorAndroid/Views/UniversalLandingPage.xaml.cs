@@ -20,6 +20,7 @@ namespace TmsCollectorAndroid.Views
 
             BarcodeEntry.SetBinding(BarcodeEntry.TextProperty, new Binding("Model.Reading", source: BindingContext, mode: BindingMode.TwoWay));
             BarcodeEntry.SetBinding(BarcodeEntry.IsReadOnlyProperty, new Binding("Model.ReadingIsReadOnly", source: BindingContext));
+            BarcodeEntry.TextChanged += Reading_OnTextChanged;
             _viewModel.Model.ReadingFocus += BarcodeEntry.Focus;
 
             ProcessDefaultButton.SetBinding(ProcessDefaultButton.FirstButtonCommandProperty, new Binding("ConfirmationCommand", source: BindingContext));
@@ -29,6 +30,11 @@ namespace TmsCollectorAndroid.Views
 
             _viewModel.Model.NumberFocus += ExecuteNumberFocus;
             _viewModel.Model.BtnConfirmFocus += ExecuteBtnConfirmFocus;
+        }
+
+        private void Reading_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            _viewModel.ReadingChangedCommand?.Execute();
         }
 
         protected override void OnAppearing()
@@ -69,11 +75,6 @@ namespace TmsCollectorAndroid.Views
             {
                 ProcessDefaultButton.FirstButtonFocus();
             }
-        }
-
-        private void BarcodeEntry_OnUnfocused(object sender, FocusEventArgs e)
-        {
-            _viewModel.ReadingChangedCommand.Execute();
         }
     }
 }

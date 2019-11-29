@@ -56,9 +56,9 @@ namespace TmsCollectorAndroid.ViewModels
 
         #region Commands
         
-        private DelegateCommand _voltarCommand;
-        public DelegateCommand VoltarCommand =>
-            _voltarCommand ?? (_voltarCommand = new DelegateCommand(VoltarCommandHandler));
+        private DelegateCommand _goBackCommand;
+        public DelegateCommand GoBackCommand =>
+            _goBackCommand ?? (_goBackCommand = new DelegateCommand(GoBackCommandHandler));
 
         private DelegateCommand<ProcessoModel> _goToProcesso;
         public DelegateCommand<ProcessoModel> GoToProcessoCommand =>
@@ -68,16 +68,16 @@ namespace TmsCollectorAndroid.ViewModels
 
         #region Command Handlers
 
-        void VoltarCommandHandler()
+        private void GoBackCommandHandler()
         {
             _userService.LogOut();
         }
 
-        void GoToProcessoCommandHandler(ProcessoModel processo)
+        private async void GoToProcessoCommandHandler(ProcessoModel processo)
         {
             if (processo != null && !string.IsNullOrEmpty(processo.Pagina))
             {
-                NavigationService.NavigateAsync(processo.Pagina, processo.NavigationParameters);
+                await NavigationService.NavigateAsync(processo.Pagina, processo.NavigationParameters);
             }
         }
         

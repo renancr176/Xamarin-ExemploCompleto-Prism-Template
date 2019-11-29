@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Prism.Commands;
 using Prism.Navigation;
 using TmsCollectorAndroid.Enums;
@@ -21,10 +22,13 @@ namespace TmsCollectorAndroid.ViewModels.PopupPages
             _commonService = commonService;
 
             Text = "Unidade";
+            CallBackData = new Dictionary<string, object>();
         }
 
         private readonly INotificationService _notificationService;
         private readonly ICommonService _commonService;
+
+        public Dictionary<string, object> CallBackData { get; private set; }
 
         public override void Initialize(INavigationParameters parameters)
         {
@@ -33,6 +37,9 @@ namespace TmsCollectorAndroid.ViewModels.PopupPages
 
             if (parameters.TryGetValue("ValidUnitType", out ValidUnitTypeEnum validUnitType))
                 ValidUnitType = validUnitType;
+
+            if (parameters.TryGetValue("CallBackData", out Dictionary<string, object> callBackData))
+                CallBackData = callBackData;
         }
 
         private ValidUnitTypeEnum _validUnitType;
@@ -116,19 +123,25 @@ namespace TmsCollectorAndroid.ViewModels.PopupPages
         private async void CancelCommandHandler()
         {
             await NavigationService.GoBackAsync(
-                new NavigationParameters() { { "UnitInputConfirmed", false } });
+                new NavigationParameters()
+                {
+                    { "UnitInputConfirmed", false },
+                    { "CallBackData", CallBackData }
+                });
         }
 
         private async void ConfirmCommandHandler()
         {
-            if (!string.IsNullOrEmpty(Unit))
+            if (!string.IsNullOrEmpty(Unit) 
+            && UnitViewInfo != null 
+            && UnitViewInfo.Code == Unit)
             {
-
                 await NavigationService.GoBackAsync(
                     new NavigationParameters()
                     {
                         { "UnitInputConfirmed", true },
-                        { "UnitViewInfo", UnitViewInfo }
+                        { "UnitViewInfo", UnitViewInfo },
+                        { "CallBackData", CallBackData }
                     });
             }
         }

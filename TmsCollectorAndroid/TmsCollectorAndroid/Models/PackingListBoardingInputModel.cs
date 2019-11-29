@@ -215,7 +215,6 @@ namespace TmsCollectorAndroid.Models
             set
             {
                 SetProperty(ref _vehicleViewInfo, value);
-                SetPropertiesFromVehicleViewInfo();
             }
         }
 
@@ -271,7 +270,7 @@ namespace TmsCollectorAndroid.Models
             set { SetProperty(ref _unitDestinationViewInfo, value); }
         }
 
-        private void SetPropertiesFromVehicleViewInfo()
+        public void SetPropertiesFromVehicleViewInfo()
         {
             TrafficSchedule = VehicleViewInfo?.TrafficScheduleId.ToString() ?? String.Empty;
             Line = VehicleViewInfo?.LineCode;

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Android.Content;
+using Android.Views.InputMethods;
 using Honeywell.AIDC.CrossPlatform;
 using Plugin.CurrentActivity;
 using TmsCollectorAndroid.Interfaces.Services;
@@ -43,6 +45,16 @@ namespace TmsCollectorAndroid.Droid.Service
 
         public async Task<BarcodeReaderBase.Result> EnableAsync(bool enabled)
         {
+            if (enabled)
+            {
+                using (var inputMethodManager =
+                    (InputMethodManager)_currentActivity.AppContext.GetSystemService(Context.InputMethodService))
+                {
+                    inputMethodManager.HideSoftInputFromWindow(_currentActivity.Activity.CurrentFocus.WindowToken,
+                        HideSoftInputFlags.None);
+                }
+            }
+
             var result = await BarcodeReader.EnableAsync(enabled);
 
             if (result.Code == 0)

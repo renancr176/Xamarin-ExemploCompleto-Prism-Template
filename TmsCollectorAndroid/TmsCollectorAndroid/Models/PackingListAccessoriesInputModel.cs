@@ -122,7 +122,7 @@ namespace TmsCollectorAndroid.Models
             AccessoryIsReadOnly = false;
             ReadingIsReadOnly = true;
 
-            Accessory = AccessoryDescription = Ctrc = Pack = Reading = String.Empty;
+            CobolNumber = Accessory = AccessoryDescription = Ctrc = Pack = Reading = String.Empty;
 
             TransportAccessoryViewInfo = null;
             PackingListViewInfo = null;

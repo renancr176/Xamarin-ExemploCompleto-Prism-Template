@@ -10,7 +10,6 @@ namespace TmsCollectorAndroid.Services
 {
     public class UserService : IUserService
     {
-        public bool SetToClose { get; private set; }
         public bool IsLogedIn { get; private set; }
         public UserModel User { get; private set; }
         
@@ -22,7 +21,6 @@ namespace TmsCollectorAndroid.Services
             _tmsApiServiceBase = tmsApiServiceBase;
             _commonService = commonService;
 
-            SetToClose = false;
             IsLogedIn = false;
         }
 
@@ -37,7 +35,7 @@ namespace TmsCollectorAndroid.Services
             if (!unit.IsSuccessStatusCode)
                 return new AuthenticationResponseModel(false, "Unidade inválida.");
 
-            var result = await _tmsApiServiceBase.Authenticate(model.CompanyId, model.UserName, model.UserPassword, SetToClose);
+            var result = await _tmsApiServiceBase.Authenticate(model.CompanyId, model.UserName, model.UserPassword);
 
             IsLogedIn = result.IsAuthenticated;
 

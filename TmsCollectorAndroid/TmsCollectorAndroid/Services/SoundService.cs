@@ -15,7 +15,7 @@ namespace TmsCollectorAndroid.Services
 
         public SoundService()
         {
-            Player = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.Current;
+            Player = CrossSimpleAudioPlayer.Current;
         }
 
         public Stream GetAudioStream(SoundEnum sound)

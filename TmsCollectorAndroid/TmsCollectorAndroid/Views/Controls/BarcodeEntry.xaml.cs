@@ -1,14 +1,20 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TmsCollectorAndroid.ViewModels.Controls;
 using Xamarin.Forms;
 
 namespace TmsCollectorAndroid.Views.Controls
 {
     public partial class BarcodeEntry : ContentView
     {
+        private readonly BarcodeEntryViewModel _viewModel;
+
         public BarcodeEntry()
         {
             InitializeComponent();
+
+            _viewModel = (BarcodeEntryViewModel) BindingContext;
 
             CustomEntry.SetBinding(Entry.TextProperty, new Binding(nameof(Text), source: this));
             CustomEntry.SetBinding(Entry.IsEnabledProperty, new Binding(nameof(IsEnabled), source: this));
@@ -57,7 +63,7 @@ namespace TmsCollectorAndroid.Views.Controls
         {
             Task.Run(async () =>
             {
-                await Task.Delay(TimeSpan.FromSeconds(0.5));
+                await Task.Delay(TimeSpan.FromMilliseconds(0.5));
                 CustomEntry.Focus();
             });
         }
@@ -68,11 +74,17 @@ namespace TmsCollectorAndroid.Views.Controls
 
         private void OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            if (TextChanged != null && !string.IsNullOrEmpty(e.NewTextValue))
+            if (TextChanged != null 
+            && !string.IsNullOrEmpty(e.NewTextValue) 
+            && (
+                _viewModel.LabelValidationService.ValidateCommonLabel(e.NewTextValue)
+                || _viewModel.LabelValidationService.ValidateMotherLabel(e.NewTextValue)))
             {
+                CustomEntry.Unfocus();
+
                 Task.Run(async () =>
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(0.5));
+                    await Task.Delay(TimeSpan.FromMilliseconds(100));
 
                     Device.BeginInvokeOnMainThread(() =>
                     {

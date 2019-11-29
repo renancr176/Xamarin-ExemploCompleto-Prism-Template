@@ -132,7 +132,11 @@ namespace TmsCollectorAndroid.ViewModels
 
             if (!string.IsNullOrEmpty(Model.Unit) && Model.Unit.IsInt())
             {
+                await _popupNavigation.PushAsync(new LoadingPopupPage());
+
                 var httpResult = await _tmsApiCommonService.ValidUnit(Model.Unit);
+
+                await _popupNavigation.PopAllAsync();
 
                 if (httpResult.IsSuccessStatusCode && httpResult.Response?.Code == Model.Unit)
                 {

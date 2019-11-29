@@ -7,14 +7,17 @@ namespace TmsCollectorAndroid.ViewModels.Controls
 {
     public class BarcodeEntryViewModel : BindableBase
     {
-        public BarcodeEntryViewModel(IBarcodeReaderService barcodeReaderService)
+        public BarcodeEntryViewModel(IBarcodeReaderService barcodeReaderService, 
+            ILabelValidationService labelValidationService)
         {
             _barcodeReaderService = barcodeReaderService;
+            LabelValidationService = labelValidationService;
 
             DisableBarcodeReader();
         }
 
         private readonly IBarcodeReaderService _barcodeReaderService;
+        public ILabelValidationService LabelValidationService { get; private set; }
 
         #region Private Methods
 

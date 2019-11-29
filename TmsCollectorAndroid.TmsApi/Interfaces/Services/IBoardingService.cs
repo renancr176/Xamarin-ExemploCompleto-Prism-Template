@@ -17,8 +17,8 @@ namespace TmsCollectorAndroid.TmsApi.Interfaces.Services
             ReadingTransportAccessoryModel model);
         Task<HttpRequestResult<PackingListViewInfoModel>> ReadingPackingListTransportAccessory(
             ReadingPackingListTransportAccessoryModel model);
-        Task<HttpRequestResult<PackingListViewInfoModel>> RemovePackingListTransportAccessory(int packingListId,
-            string cobolNumber, int unitSendId, MacAddressModel macAddress);
+        Task<HttpRequestResult<PackingListViewInfoModel>> RemovePackingListTransportAccessory(
+            RemovePackingListTransportAccessoryModel model);
         Task<HttpRequestResult<PackingListViewInfoModel>> CancelPackBoarding(CancelPackBoardingModel model);
         Task<HttpRequestResult<PackingListViewInfoModel>> CancelBillOfLadingBoarding(
             CancelBillOfLadingBoardingModel model);

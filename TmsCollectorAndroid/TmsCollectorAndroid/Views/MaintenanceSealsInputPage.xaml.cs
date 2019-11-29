@@ -13,10 +13,22 @@ namespace TmsCollectorAndroid.Views
         {
             InitializeComponent();
 
-            ProcessDefaultButton.SetBinding(ProcessDefaultButton.FirstButtonCommandProperty, new Binding("ConfirmationCommand", source: BindingContext));
-            ProcessDefaultButton.SetBinding(ProcessDefaultButton.SecondButtonCommandProperty, new Binding("CancelCommand", source: BindingContext));
+            _viewModel = (MaintenanceSealsInputPageViewModel) BindingContext;
+
+            NavigationPage.SetHasNavigationBar(this, false);
+
+            Header.SetBinding(Header.TitleProperty, new Binding("Title", source: BindingContext));
+
+            ProcessDefaultButton.SetBinding(ProcessDefaultButton.SecondButtonCommandProperty, new Binding("ConfirmationCommand", source: BindingContext));
+            ProcessDefaultButton.SetBinding(ProcessDefaultButton.FirstButtonCommandProperty, new Binding("CancelCommand", source: BindingContext));
 
             _viewModel.Model.SealFocus += ExecuteSealFocus;
+            _viewModel.Model.BtnConfirmationFocus += ExecuteBtnConfirmationFocus;
+        }
+
+        private void ExecuteBtnConfirmationFocus()
+        {
+            ProcessDefaultButton.SecondButtonFocus();
         }
 
         protected override void OnAppearing()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Prism.Commands;
+using Prism.Common;
 using Prism.Navigation;
 using Rg.Plugins.Popup.Contracts;
 using TmsCollectorAndroid.Enums;
@@ -24,7 +25,8 @@ namespace TmsCollectorAndroid.ViewModels
             IUserService userService,
             ICommonService commonService,
             ILandingService landingService,
-            IWifiService wifiService)
+            IWifiService wifiService,
+            ILabelValidationService labelValidationService)
             : base(navigationService, barcodeReaderService, statusBarService)
         {
             _notificationService = notificationService;
@@ -33,8 +35,10 @@ namespace TmsCollectorAndroid.ViewModels
             _commonService = commonService;
             _landingService = landingService;
             _wifiService = wifiService;
+            _labelValidationService = labelValidationService;
 
             Model = new PackingListLandingInputModel();
+            MenuAdtionalButtons = new Dictionary<string, DelegateCommand>();
 
             CancelPackLanding += ExecuteCancelPackLanding;
             CancelBillOfLadingLanding += ExecuteCancelBillOfLadingLanding;
@@ -48,6 +52,7 @@ namespace TmsCollectorAndroid.ViewModels
         private readonly ICommonService _commonService;
         private readonly ILandingService _landingService;
         private readonly IWifiService _wifiService;
+        private readonly ILabelValidationService _labelValidationService;
 
         private PackingListLandingInputModel _model;
         public PackingListLandingInputModel Model
@@ -77,6 +82,13 @@ namespace TmsCollectorAndroid.ViewModels
                 parameters.TryGetValue("CallBackData", out Dictionary<string, object> callBackData);
                 ConfirmationRandomConfirmed(confirmed, callBackData);
             }
+
+            if (parameters.TryGetValue("MaintenanceSealsInputConfirmed", out confirmed))
+            {
+                parameters.TryGetValue("CallBackData", out Dictionary<string, object> callBackData);
+
+                MaintenanceSealsInputConfirmed(confirmed, callBackData);
+            }
         }
 
         #endregion
@@ -95,8 +107,10 @@ namespace TmsCollectorAndroid.ViewModels
             };
         }
 
-        private void SetVehicleLanding()
+        private async void SetVehicleLanding()
         {
+            AddMenuAdtionalBunttons();
+
             Model.VehicleDescription = Model.VehicleViewInfo.Plate;
             Model.TrafficSchedule = Model.VehicleViewInfo.TrafficScheduleId.ToString();
             Model.Line = Model.VehicleViewInfo.LineCode;
@@ -106,8 +120,8 @@ namespace TmsCollectorAndroid.ViewModels
             Model.TeamIsReadOnly = Model.CarIsReadOnly = true;
             Model.ReadingIsReadOnly = false;
             Model.Reading = String.Empty;
+            await Task.Delay(TimeSpan.FromSeconds(0.5));
             Model.ReadingFocus();
-            AddMenuAdtionalBunttons();
         }
 
         private async Task SetPackingListLanding()
@@ -130,37 +144,37 @@ namespace TmsCollectorAndroid.ViewModels
             }
         }
 
-        private async void ReadingPackLanding(ReadingPackLandingModel model)
+        private async Task ReadingPackLanding(ReadingPackLandingModel model)
         {
             var readingPackLanding = await _landingService.ReadingPackLanding(model);
 
             if (readingPackLanding.Response != null && readingPackLanding.Response.Valid)
             {
                 Model.VehicleViewInfo.OperationalControlId = readingPackLanding.Response.OperationalControlId;
-                await SetPackingListLanding();
+                Model.PackAmount = readingPackLanding.Response.PackAmount.ToString();
+                Model.PackReading = readingPackLanding.Response.PackAmountReading.ToString();
             }
-            else
+            else if (readingPackLanding.Response != null)
             {
-                switch (readingPackLanding.Response?.ExceptionCode)
+                switch (readingPackLanding.Response.ExceptionCode)
                 {
-                    //case ExceptionCodeEnum.VehicleNotBoardingLanding:
-                    //case ExceptionCodeEnum.VehicleInLandingPaused:
-                    //    if (!await ShowQuestionDialogSpeech(
-                    //        $"{readingPackLanding.Response?.ExceptionMessage}\r\nDeseja iniciar desembarque?"))
-                    //    {
-                    //        var _startingLanding = await _landingService.StartingLanding(new StartingLandingModel(
-                    //            Model.VehicleViewInfo.OperationalControlId, _userService.User.Unit.Id,
-                    //            Model.VehicleViewInfo.TrafficScheduleDetailId, Model.Team));
+                    case ExceptionCodeEnum.VehicleNotBoardingLanding:
+                    case ExceptionCodeEnum.VehicleInLandingPaused:
+                        if (!await _notificationService.AskQuestionAsync(
+                            $"{readingPackLanding.Response?.ExceptionMessage}\r\nDeseja iniciar desembarque?", SoundEnum.Alert))
+                        {
+                            var startingLanding = await _landingService.StartingLanding(new StartingLandingModel(
+                                Model.VehicleViewInfo.OperationalControlId, _userService.User.Unit.Id,
+                                Model.VehicleViewInfo.TrafficScheduleDetailId, Model.Team));
 
-                    //        if (_startingLanding.Response != null && _startingLanding.Response.Valid)
-                    //            Model.VehicleViewInfo.OperationalControlId = _startingLanding.Response.OperationalControlId;
-                    //        else
-                    //        {
-                    //            await ShowDialogSpeech(_startingLanding.Response?.ExceptionMessage ?? "Não houve resposta da API.");
-                    //        }
-                    //    }
-                    //    break;
-                    //case ExceptionCode._PACK_READ:
+                            if (startingLanding.Response != null && startingLanding.Response.Valid)
+                                Model.VehicleViewInfo.OperationalControlId = startingLanding.Response.OperationalControlId;
+                            else
+                            {
+                                await _notificationService.NotifyAsync(startingLanding.Response?.ExceptionMessage ?? "Não houve resposta da API.");
+                            }
+                        }
+                        break;
                     case ExceptionCodeEnum.PackRead:
                         if (await _notificationService.AskQuestionAsync(
                             $"{readingPackLanding.Response?.ExceptionMessage}\r\nDeseja estornar o volume registrado na leitura atual?", SoundEnum.Alert))
@@ -177,11 +191,12 @@ namespace TmsCollectorAndroid.ViewModels
                                     model.UnitLanding, model.BarCode, model.MacAddress));
                         }
                         break;
-                    //case ExceptionCode._PACK_NOT_LOADING:
-                    //    FormExtender.HideWaitCursor();
-                    //    MsgBox.Show(packingListViewInfo.ExceptionMessage, MsgType.Warning);
-                    //    return ReadingPackLanding(teamCode, trafficScheduleDetailId, packingListId, unitLandingId, textBoxBarCode, packAmount, packAmountReading, teamId, true);
-                    //    break;
+                    case ExceptionCodeEnum.PackNotLoading:
+                        await _notificationService.NotifyAsync(readingPackLanding.Response.ExceptionMessage, SoundEnum.Alert);
+                        await ReadingPackLanding(new ReadingPackLandingModel(model.TrafficScheduleDetailId,
+                            model.TeamId, model.PackingListId, model.UnitLanding, model.BarCode, model.MacAddress,
+                            true));
+                        break;
                     default:
                         var msg = readingPackLanding.Response?.ExceptionMessage ??
                                   readingPackLanding.Error.ErrorDescription;
@@ -189,10 +204,93 @@ namespace TmsCollectorAndroid.ViewModels
                         if (!string.IsNullOrEmpty(msg))
                             await _notificationService.NotifyAsync(msg, SoundEnum.Erros);
 
-                        Model.Reading = String.Empty;
-                        Model.ReadingFocus();
                         break;
                 }
+            }
+            else
+            {
+                await _notificationService.NotifyAsync("Não foi possivel completar a requisição.", SoundEnum.Erros);
+            }
+        }
+
+        private async Task ReadingTransportAccessoryLanding(ReadingTransportAccessoryLandingModel model)
+        {
+            var packingListViewInfo = await _landingService.ReadingTransportAccessoryLanding(model);
+
+            if (packingListViewInfo.Response != null && packingListViewInfo.Response.Valid)
+            {
+                if (!string.IsNullOrEmpty(packingListViewInfo.Response.InformationMessage))
+                    await _notificationService.NotifyAsync(packingListViewInfo.Response.InformationMessage,
+                        SoundEnum.Alert, "Informação");
+
+                Model.PackAmount = packingListViewInfo.Response.PackAmount.ToString();
+                Model.PackReading = packingListViewInfo.Response.PackAmountReading.ToString();
+            }
+            else if (packingListViewInfo.Response != null)
+            {
+                switch (packingListViewInfo.Response.ExceptionCode)
+                {
+                    case ExceptionCodeEnum.VehicleNotBoardingLanding:
+                    case ExceptionCodeEnum.VehicleInLandingPaused:
+                        if (await _notificationService.AskQuestionAsync(
+                            packingListViewInfo.Response.ExceptionMessage + "\r\nDeseja iniciar desembarque?",
+                            SoundEnum.Alert))
+                        {
+                            var startingLanding = await _landingService.StartingLanding(
+                                new StartingLandingModel(Model.VehicleViewInfo.OperationalControlId, model.UnitLanding,
+                                    Model.VehicleViewInfo.TrafficScheduleDetailId, Model.TeamViewInfo.Code));
+
+                            if (startingLanding.Response != null && startingLanding.Response.Valid)
+                                Model.VehicleViewInfo.OperationalControlId =
+                                    startingLanding.Response.OperationalControlId;
+                            else
+                                await _notificationService.NotifyAsync(startingLanding.Response.ExceptionMessage,
+                                    SoundEnum.Erros);
+                        }
+                        break;
+                    case ExceptionCodeEnum.PackRead:
+                        if (await _notificationService.AskQuestionAsync(
+                            packingListViewInfo.Response.ExceptionMessage +
+                            "\r\nDeseja estornar o romaneio de acessório registrado na leitura atual?",
+                            SoundEnum.Alert))
+                        {
+                            CallConfirmationRandomPopupPage(CancelPackingListTransportAccessoryLanding,
+                                new CancelPackingListTransportAccessoryLandingModel(model.PackingListId,
+                                    model.TrafficScheduleDetailId, model.PackingListTransportAccessoryCode,
+                                    model.UnitLanding, model.MacAddress));
+                        }
+                        break;
+                    case ExceptionCodeEnum.SealWarning:
+                        await _notificationService.NotifyAsync(packingListViewInfo.Response.ExceptionMessage, SoundEnum.Alert);
+
+                        await NavigationService.NavigateAsync("MaintenanceSealsInputPage",
+                            new NavigationParameters()
+                            {
+                                { "Title", "Solicitação" },
+                                {
+                                    "MaintenanceSealsInputModel",
+                                    new MaintenanceSealsInputModel()
+                                    {
+                                        OnlyConference = true,
+                                        PackingListAccessoryId = packingListViewInfo.Response.TransportAccessoryId,
+                                        TransportAccessoryDoors = packingListViewInfo.Response.TransportAccessoryDoors
+                                    }
+                                },
+                                { "CallBackData", new Dictionary<string, object>() {{ "Model", model }} }
+                            }
+                        );
+                        break;
+                    default:
+                        await _notificationService.NotifyAsync(packingListViewInfo.Response.ExceptionMessage, SoundEnum.Erros);
+
+                        if (!string.IsNullOrEmpty(packingListViewInfo.Response.InformationMessage))
+                            await _notificationService.NotifyAsync(packingListViewInfo.Response.InformationMessage, SoundEnum.Alert);
+                        break;
+                }
+            }
+            else
+            {
+                await _notificationService.NotifyAsync("Não foi possivel completar a requisição.", SoundEnum.Erros);
             }
         }
 
@@ -225,7 +323,7 @@ namespace TmsCollectorAndroid.ViewModels
             {
                 Model.Date = Model.VehicleViewInfo.TrafficScheduleDateTime.ToString("dd/MM/yyyy HH:mm");
 
-                SetVehicleLanding();
+                CarChangedCommand.Execute();
             }
             else
             {
@@ -242,7 +340,7 @@ namespace TmsCollectorAndroid.ViewModels
                     && callBackData.TryGetValue("Model", out object model))
                 {
                     var cancelPackLanding = action as Action<CancelPackLandingModel>;
-                    var cancelBillOfLadingBoarding = action as Action<CancelBillOfLadingBoardingModel>;
+                    var cancelBillOfLadingBoarding = action as Action<CancelBillOfLadingLandingModel>;
                     var endingProcess = action as Action<EndingLandingModel>;
                     var defaultAction = action as Action;
 
@@ -254,7 +352,7 @@ namespace TmsCollectorAndroid.ViewModels
                     }
                     else if (cancelBillOfLadingBoarding != null)
                     {
-                        var cancelBillOfLadingBoardingModel = (CancelBillOfLadingBoardingModel)model;
+                        var cancelBillOfLadingBoardingModel = (CancelBillOfLadingLandingModel)model;
 
                         cancelBillOfLadingBoarding(cancelBillOfLadingBoardingModel);
                     }
@@ -274,6 +372,18 @@ namespace TmsCollectorAndroid.ViewModels
             {
                 Model.Reading = String.Empty;
                 Model.ReadingFocus();
+            }
+        }
+
+        private void MaintenanceSealsInputConfirmed(bool confirmed, Dictionary<string, object> callBackData)
+        {
+            if (confirmed
+                && callBackData != null
+                && callBackData.TryGetValue("Model", out ReadingTransportAccessoryLandingModel model))
+            {
+                ReadingTransportAccessoryLanding(new ReadingTransportAccessoryLandingModel(
+                    model.TrafficScheduleDetailId, model.TeamId, model.PackingListId, model.UnitLanding,
+                    model.PackingListTransportAccessoryCode, model.MacAddress, model.IgnoreLoaded, false));
             }
         }
 
@@ -313,6 +423,8 @@ namespace TmsCollectorAndroid.ViewModels
                     SoundEnum.Erros);
             }
         }
+
+        public Action<CancelPackingListTransportAccessoryLandingModel> CancelPackingListTransportAccessoryLanding;
 
         public Action PauseLanding;
 
@@ -381,6 +493,10 @@ namespace TmsCollectorAndroid.ViewModels
 
         #region Menu Commands
 
+        private DelegateCommand _packingListAccessoriesInputCommand;
+        public DelegateCommand PackingListAccessoriesInputCommand =>
+            _packingListAccessoriesInputCommand ?? (_packingListAccessoriesInputCommand = new DelegateCommand(PackingListAccessoriesInputCommandHandler));
+
         private DelegateCommand _viewLackCommand;
         public DelegateCommand ViewLackCommand =>
             _viewLackCommand ?? (_viewLackCommand = new DelegateCommand(ViewLackCommandHandler));
@@ -413,7 +529,11 @@ namespace TmsCollectorAndroid.ViewModels
 
             if (!string.IsNullOrEmpty(Model.Team))
             {
+                await _popupNavigation.PushAsync(new LoadingPopupPage());
+
                 var team = await _commonService.ValidTeam(_userService.User.Unit.Id, Model.Team);
+
+                await _popupNavigation.PopAllAsync();
 
                 Model.TeamViewInfo = team.Response;
 
@@ -446,9 +566,7 @@ namespace TmsCollectorAndroid.ViewModels
 
                 await _popupNavigation.PopAllAsync();
 
-                var success = Model.VehicleViewInfo != null && Model.VehicleViewInfo.Valid;
-
-                if (success && Model.VehicleViewInfo.Id > 0)
+                if (Model.VehicleViewInfo != null && Model.VehicleViewInfo.Id > 0 && string.IsNullOrEmpty(Model.Date.Trim()))
                 {
                     await NavigationService.NavigateAsync("RequestTrafficScheduleDateInputPopupPage",
                         new NavigationParameters()
@@ -457,7 +575,7 @@ namespace TmsCollectorAndroid.ViewModels
                             { "TrafficScheduleDateTime", Model.VehicleViewInfo.TrafficScheduleDateTime }
                         });
                 }
-                else if (success)
+                else if (Model.VehicleViewInfo != null && Model.VehicleViewInfo.Valid)
                 {
                     SetVehicleLanding();
                 }
@@ -482,7 +600,6 @@ namespace TmsCollectorAndroid.ViewModels
                             if (startingLanding.Response != null && startingLanding.Response.Valid)
                             {
                                 Model.VehicleViewInfo.OperationalControlId = startingLanding.Response.OperationalControlId;
-                                
                                 CarChangedCommand.Execute();
                             }
                             else
@@ -508,9 +625,26 @@ namespace TmsCollectorAndroid.ViewModels
         {
             if (Model.IsValid())
             {
-                ReadingPackLanding(new ReadingPackLandingModel(Model.VehicleViewInfo.TrafficScheduleDetailId,
-                    Model.TeamViewInfo.Id, Model.VehicleViewInfo.PackingListId, _userService.User.Unit.Id,
-                    Model.Reading, _wifiService.MacAddress, false));
+                if (_labelValidationService.ValidateCommonLabel(Model.Reading))
+                {
+                    ReadingPackLanding(new ReadingPackLandingModel(Model.VehicleViewInfo.TrafficScheduleDetailId,
+                        Model.TeamViewInfo.Id, Model.VehicleViewInfo.PackingListId, _userService.User.Unit.Id,
+                        Model.Reading, _wifiService.MacAddress, false));
+                }
+                else if (_labelValidationService.ValidateMotherLabel(Model.Reading))
+                {
+                    ReadingTransportAccessoryLanding(new ReadingTransportAccessoryLandingModel(
+                        Model.VehicleViewInfo.TrafficScheduleDetailId, Model.TeamViewInfo.Id,
+                        Model.VehicleViewInfo.PackingListId, _userService.User.Unit.Id, Model.Reading,
+                        _wifiService.MacAddress, false, true));
+                }
+                else
+                {
+                    await _notificationService.NotifyAsync("Tipo de código de barras não identificado.", SoundEnum.Alert);
+                }
+
+                Model.Reading = String.Empty;
+                Model.ReadingFocus();
             }
             else
             {
@@ -528,6 +662,11 @@ namespace TmsCollectorAndroid.ViewModels
         }
 
         #region Menu Command Handlers
+
+        private async void PackingListAccessoriesInputCommandHandler()
+        {
+            await NavigationService.NavigateAsync("PackingListAccessoriesInputPage");
+        }
 
         private async void ViewLackCommandHandler()
         {

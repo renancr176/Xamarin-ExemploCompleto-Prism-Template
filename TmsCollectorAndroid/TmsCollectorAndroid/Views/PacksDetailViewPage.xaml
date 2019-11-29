@@ -59,9 +59,6 @@
                                         HorizontalOptions="StartAndExpand"/>
                             </Grid>
                         </ViewCell>
-                        <!--<SwitchCell Text="{Binding Text}" 
-                                    On="{Binding Checked}"
-                                    OnChanged="Switch_OnChanged"/>-->
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

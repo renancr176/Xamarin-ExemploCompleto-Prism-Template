@@ -8,37 +8,47 @@
              xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms">
 
     <StackLayout Padding="10">
-        <controls:Header Title="LACRE"/>
+        <controls:Header x:Name="Header"/>
         <ScrollView>
             <StackLayout>
-                <Label Text="{Binding Model.Message}"
+                <Label Text="Lacre"
                        Style="{StaticResource LblFieldDescriptionBold}"/>
                 <Entry x:Name="Seal" 
-                       Text="{Binding Model.LvSeals}">
+                       Keyboard="Numeric"
+                       Text="{Binding Model.Seal}">
                     <Entry.Behaviors>
                         <b:EventToCommandBehavior EventName="Unfocused"
                                                   Command="{Binding SealChangedCommand}"/>
                     </Entry.Behaviors>
                 </Entry>
-                <ListView ItemsSource="{Binding Model.Seals}">
-                    <ListView.Header>
-                        <Label Text="Lacre"
-                               Style="{StaticResource LblFieldDescriptionBold}"/>
-                    </ListView.Header>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <Label Text="{Binding .}"/>
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <Frame Padding="2"
+                       BorderColor="DimGray">
+                    <ListView ItemsSource="{Binding Model.LvSeals}">
+                        <ListView.Header>
+                            <StackLayout BackgroundColor="{StaticResource ColorDefault}"
+                                         Padding="5">
+                                <Label Text="Lacres adicionados"
+                                       Style="{StaticResource LblFieldDescriptionBold}"/>
+                            </StackLayout>
+                        </ListView.Header>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <Label Text="{Binding .}"
+                                           VerticalTextAlignment="Center"
+                                           FontSize="Medium"
+                                           Margin="10,0,0,0"/>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Frame>
             </StackLayout>
         </ScrollView>
         <controls:Footer />
         <controls:ProcessDefaultButton x:Name="ProcessDefaultButton" 
-                                       FirstButtonText="Confirmar"
-                                       SecondButtonText="Cancelar"
+                                       FirstButtonText="Cancelar"
+                                       SecondButtonText="Confirmar"
                                        MenuButtonIsVisible="False"/>
     </StackLayout>
 

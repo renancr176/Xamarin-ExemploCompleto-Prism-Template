@@ -19,6 +19,13 @@ namespace TmsCollectorAndroid.Models
             NavigationParameters.Add("processo", Processo);
         }
 
+        public ProcessoModel(ProcessoEnum processo, string pagina, NavigationParameters navigationParameters)
+            : this(processo, pagina)
+        {
+            NavigationParameters = navigationParameters;
+            NavigationParameters.Add("processo", Processo);
+        }
+
         public void AddNavigationParameters(string key, object value)
         {
             NavigationParameters.Add(key, value);

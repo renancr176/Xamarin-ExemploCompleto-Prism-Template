@@ -12,6 +12,7 @@ namespace TmsCollectorAndroid.IoC
             containerRegistry.RegisterSingleton<IUserService, UserService>();
             containerRegistry.Register<ISoundService, SoundService>();
             containerRegistry.Register<INotificationService, NotificationService>();
+            containerRegistry.RegisterSingleton<ILabelValidationService, LabelValidationService>();
         }
     }
 }

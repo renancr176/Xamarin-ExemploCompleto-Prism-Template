@@ -13,7 +13,7 @@ namespace TmsCollectorAndroid.TmsApi.Interfaces.Services
 
         void SetApiUrl(IEnumerable<string> baseUrls);
         Task<bool> TestConection();
-        Task<AuthenticationResponseModel> Authenticate(int companyId, string userName, string userPassword, bool setToClose);
+        Task<AuthenticationResponseModel> Authenticate(int companyId, string userName, string userPassword);
         Task FinalizeSession();
         Task<string> CheckVersion();
         Task<string> GetWebServiceVersion();

@@ -1,4 +1,5 @@
-﻿using Prism.Commands;
+﻿using System.Collections.Generic;
+using Prism.Commands;
 using Prism.Navigation;
 using TmsCollectorAndroid.Enums;
 using TmsCollectorAndroid.Interfaces.Services;
@@ -17,10 +18,20 @@ namespace TmsCollectorAndroid.ViewModels.PopupPages
         {
             _notificationService = notificationService;
             _commonService = commonService;
+
+            CallBackData = new Dictionary<string, object>();
         }
 
         private readonly INotificationService _notificationService;
         private readonly ICommonService _commonService;
+
+        public Dictionary<string, object> CallBackData { get; private set; }
+
+        public override void Initialize(INavigationParameters parameters)
+        {
+            if (parameters.TryGetValue("CallBackData", out Dictionary<string, object> callBackData))
+                CallBackData = callBackData;
+        }
 
         private string _warehousePassword;
         public string WarehousePassword
@@ -46,7 +57,11 @@ namespace TmsCollectorAndroid.ViewModels.PopupPages
         private async void CancelCommandHandler()
         {
             await NavigationService.GoBackAsync(
-                new NavigationParameters() { { "WarehousePasswordInputConfirmed", false } });
+                new NavigationParameters()
+                {
+                    { "WarehousePasswordInputConfirmed", false },
+                    { "CallBackData", CallBackData }
+                });
         }
 
         private async void ConfirmCommandHandler()
@@ -62,7 +77,8 @@ namespace TmsCollectorAndroid.ViewModels.PopupPages
                         {
                             { "WarehousePasswordInputConfirmed", true },
                             { "WarehousePassword", WarehousePassword },
-                            { "WarehousePasswordId", getWarehousePassword.Response.WarehousePasswordId }
+                            { "WarehousePasswordId", getWarehousePassword.Response.WarehousePasswordId },
+                            { "CallBackData", CallBackData }
                         });
                 }
                 else

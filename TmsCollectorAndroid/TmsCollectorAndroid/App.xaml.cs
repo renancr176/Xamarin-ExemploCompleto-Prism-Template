@@ -1,4 +1,5 @@
-﻿using Prism;
+﻿using System.Globalization;
+using Prism;
 using Prism.Ioc;
 using Prism.Unity;
 using TmsCollectorAndroid.IoC;
@@ -21,6 +22,8 @@ namespace TmsCollectorAndroid
 
         protected override async void OnInitialized()
         {
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("pt-BR");
+
             InitializeComponent();
 
             await NavigationService.NavigateAsync("NavigationPage/LoginPage");

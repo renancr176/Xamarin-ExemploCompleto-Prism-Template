@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Prism.Mvvm;
 
@@ -9,13 +8,15 @@ namespace TmsCollectorAndroid.Models
     {
         public MaintenanceSealsInputModel()
         {
-            Seals = new List<string>();
+            Seals = new ObservableCollection<string>();
             LvSeals = new ObservableCollection<string>();
         }
 
         #region Controls
 
         public Action SealFocus;
+
+        public Action BtnConfirmationFocus;
 
         #endregion
 
@@ -40,7 +41,12 @@ namespace TmsCollectorAndroid.Models
             set { SetProperty(ref _onlyConference, value); }
         }
 
-        public List<string> Seals { get; set; }
+        private ObservableCollection<string> _seals;
+        public ObservableCollection<string> Seals
+        {
+            get { return _seals; }
+            set { SetProperty(ref _seals, value); }
+        }
 
         private string _message;
         public string Message

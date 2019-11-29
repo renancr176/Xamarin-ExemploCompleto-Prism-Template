@@ -52,8 +52,19 @@ namespace TmsCollectorAndroid.ViewModels
 
         public override void Initialize(INavigationParameters parameters)
         {
+            if (parameters.TryGetValue("Title", out string title))
+            {
+                Title = title;
+            }
+            else
+            {
+                Title = "Lacre";
+            }
+
             if (parameters.TryGetValue("MaintenanceSealsInputModel", out MaintenanceSealsInputModel model))
             {
+                model.SealFocus = Model.SealFocus;
+                model.BtnConfirmationFocus = Model.BtnConfirmationFocus;
                 Model = model;
                 LoadSeals();
             }
@@ -77,7 +88,7 @@ namespace TmsCollectorAndroid.ViewModels
             await _popupNavigation.PopAllAsync();
 
             if (getSeals.Response != null && getSeals.Response.Seals.Any())
-                Model.Seals = getSeals.Response.Seals.ToList(); 
+                Model.Seals = new ObservableCollection<string>(getSeals.Response.Seals); 
 
             if (!Model.OnlyConference)
                 Model.LvSeals = new ObservableCollection<string>(Model.Seals);
@@ -144,8 +155,6 @@ namespace TmsCollectorAndroid.ViewModels
                     {
                         Model.Seals.Add(Model.Seal);
                         Model.LvSeals.Add(Model.Seal);
-                        Model.Seal = String.Empty;
-                        Model.SealFocus();
                     }
                     else if (packingListViewInfo.Response != null)
                     {
@@ -171,8 +180,6 @@ namespace TmsCollectorAndroid.ViewModels
                     {
                         Model.Seals.Remove(Model.Seal);
                         Model.LvSeals.Remove(Model.Seal);
-                        Model.Seal = String.Empty;
-                        Model.SealFocus();
                     }
                     else if (packingListViewInfo.Response != null)
                     {
@@ -186,6 +193,12 @@ namespace TmsCollectorAndroid.ViewModels
                         if (!Model.LvSeals.Any(seal => seal.Trim().ToUpper().Equals(Model.Seal.Trim().ToUpper())))
                         {
                             Model.LvSeals.Add(Model.Seals.FirstOrDefault(seal => seal.Trim().ToUpper().Equals(Model.Seal.Trim().ToUpper())));
+                            if (Model.Seals.Count == Model.LvSeals.Count)
+                            {
+                                Model.Seal = String.Empty;
+                                Model.BtnConfirmationFocus();
+                                return;
+                            }
                         }
                         else if (await _notificationService.AskQuestionAsync("Lacre já informado. Deseja remover?", 
                             SoundEnum.Alert))
@@ -200,6 +213,9 @@ namespace TmsCollectorAndroid.ViewModels
                             SoundEnum.Erros);
                     }
                 }
+
+                Model.Seal = String.Empty;
+                Model.SealFocus();
             }
         }
 
@@ -239,10 +255,37 @@ namespace TmsCollectorAndroid.ViewModels
 
         private async void CancelCommandHandler()
         {
+            if (!Model.OnlyConference && Model.Seals.Any())
+            {
+                await _popupNavigation.PushAsync(new LoadingPopupPage());
+
+                foreach (var seal in Model.Seals)
+                {
+                    var packingListViewInfo = await _boardingAccessoryService.RemoveSeal(
+                        new RemoveSealModel(Model.PackingListAccessoryId, Model.Seal, _wifiService.MacAddress));
+
+                    if (packingListViewInfo.Response != null && packingListViewInfo.Response.Valid)
+                    {
+                        Model.Seals.Remove(Model.Seal);
+                        Model.LvSeals.Remove(Model.Seal);
+                    }
+                }
+
+                await _popupNavigation.PopAllAsync();
+
+                if (Model.Seals.Any())
+                {
+                    await _notificationService.NotifyAsync("Não foi possível remover todos os lacres, tente novamente ou comunique a T.I.",
+                        SoundEnum.Alert);
+
+                    return;
+                }
+            }
+
             await NavigationService.GoBackAsync(new NavigationParameters()
             {
-                { "MaintenanceSealsInputConfirmed", false },
-                { "CallBackData", CallBackData }
+                {"MaintenanceSealsInputConfirmed", false},
+                {"CallBackData", CallBackData}
             });
         }
 

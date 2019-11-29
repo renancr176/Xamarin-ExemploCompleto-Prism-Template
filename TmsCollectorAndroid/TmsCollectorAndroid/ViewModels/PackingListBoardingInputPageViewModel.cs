@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Prism.Commands;
+using Prism.Common;
 using Prism.Navigation;
 using Rg.Plugins.Popup.Contracts;
 using TmsCollectorAndroid.Enums;
@@ -13,6 +14,7 @@ using TmsCollectorAndroid.TmsApi.Models;
 using TmsCollectorAndroid.TmsApi.Models.Requests;
 using TmsCollectorAndroid.TmsApi.Models.Responses;
 using TmsCollectorAndroid.Views.PopupPages;
+using ReadingTransportAccessoryModel = TmsCollectorAndroid.Models.ReadingTransportAccessoryModel;
 
 namespace TmsCollectorAndroid.ViewModels
 {
@@ -26,7 +28,8 @@ namespace TmsCollectorAndroid.ViewModels
             IPopupNavigation popupNavigation,
             ICommonService commonService,
             IBoardingService boardingService,
-            IWifiService wifiService) 
+            IWifiService wifiService,
+            ILabelValidationService labelValidationService) 
             : base(navigationService, barcodeReaderService, statusBarService)
         {
             _userService = userService;
@@ -35,12 +38,14 @@ namespace TmsCollectorAndroid.ViewModels
             _commonService = commonService;
             _boardingService = boardingService;
             _wifiService = wifiService;
+            _labelValidationService = labelValidationService;
 
             Model = new PackingListBoardingInputModel();
             MenuAdtionalButtons = new Dictionary<string, DelegateCommand>();
 
             CancelPackBoarding += ExecuteCancelPackBoarding;
             CancelBillOfLadingBoarding += ExecuteCancelBillOfLadingBoarding;
+            RemovePackingListTransportAccessory += ExecuteRemovePackingListTransportAccessory;
             PauseBoarding += ExecutePauseBoarding;
             EndingProcess += ExecuteEndingProcess;
         }
@@ -51,6 +56,7 @@ namespace TmsCollectorAndroid.ViewModels
         private readonly ICommonService _commonService;
         private readonly IBoardingService _boardingService;
         private readonly IWifiService _wifiService;
+        private readonly ILabelValidationService _labelValidationService;
 
         private PackingListBoardingInputModel _model;
         public PackingListBoardingInputModel Model
@@ -87,22 +93,31 @@ namespace TmsCollectorAndroid.ViewModels
             if (parameters.TryGetValue("UnitInputConfirmed", out confirmed))
             {
                 parameters.TryGetValue("UnitViewInfo", out UnitViewInfoModel unitDestinationViewInfo);
+                parameters.TryGetValue("CallBackData", out Dictionary<string, object> callBackData);
 
-                RequestUnitInputConfirmed(confirmed, unitDestinationViewInfo);
+                RequestUnitInputConfirmed(confirmed, unitDestinationViewInfo, callBackData);
             }
 
             if (parameters.TryGetValue("WarehousePasswordInputConfirmed", out confirmed))
             {
                 parameters.TryGetValue("WarehousePassword", out string warehousePassword);
                 parameters.TryGetValue("WarehousePasswordId", out int warehousePasswordId);
+                parameters.TryGetValue("CallBackData", out Dictionary<string, object> callBackData);
 
-                WarehousePasswordInputConfirmed(confirmed, warehousePassword, warehousePasswordId);
+                WarehousePasswordInputConfirmed(confirmed, warehousePassword, warehousePasswordId, callBackData);
             }
 
             if (parameters.TryGetValue("ConfirmationRandomConfirmed", out confirmed))
             {
                 parameters.TryGetValue("CallBackData", out Dictionary<string, object> callBackData);
                 ConfirmationRandomConfirmed(confirmed, callBackData);
+            }
+
+            if (parameters.TryGetValue("MaintenanceSealsInputConfirmed", out confirmed))
+            {
+                parameters.TryGetValue("CallBackData", out Dictionary<string, object> callBackData);
+
+                MaintenanceSealsInputConfirmed(confirmed, callBackData);
             }
         }
 
@@ -145,6 +160,7 @@ namespace TmsCollectorAndroid.ViewModels
             {
                 MenuAdtionalButtons = new Dictionary<string, DelegateCommand>()
                 {
+                    {"Etiqueta Mãe", PackingListAccessoriesInputCommand},
                     {"Faltas", ViewLackCommand},
                     {"Emitir Etiqueta", SendLabelCommand},
                     {"Pausa", PauseProcessCommand},
@@ -168,11 +184,13 @@ namespace TmsCollectorAndroid.ViewModels
 
             if (Model.PackingListViewInfo != null && Model.PackingListViewInfo.Valid)
             {
+                AddMenuAdtionalBunttons();
+
                 Model.TeamIsReadOnly = Model.CarNumberIsReadOnly = true;
                 Model.ReadingIsReadOnly = false;
                 Model.Reading = String.Empty;
+                await Task.Delay(TimeSpan.FromSeconds(0.5));
                 Model.ReadingFocus();
-                AddMenuAdtionalBunttons();
             }
             else
             {
@@ -213,7 +231,7 @@ namespace TmsCollectorAndroid.ViewModels
             }
         }
 
-        private async void ReadingPackBoarding(ReadingPackBoardingModel model)
+        private async Task ReadingPackBoarding(ReadingPackBoardingModel model)
         {
             var readingPackBoarding = await _boardingService.ReadingPackBoarding(model);
 
@@ -221,8 +239,6 @@ namespace TmsCollectorAndroid.ViewModels
             {
                 Model.PackAmount = readingPackBoarding.Response.TotalBillOfLading.ToString();
                 Model.PackReading = readingPackBoarding.Response.TotalPack.ToString();
-                Model.Reading = String.Empty;
-                Model.ReadingFocus();
                 Model.VehicleViewInfo.OperationalControlId = readingPackBoarding.Response.OperationalControlId;
 
                 if (_userService.User.Unit.IsJointUnit)
@@ -233,10 +249,19 @@ namespace TmsCollectorAndroid.ViewModels
                 switch (readingPackBoarding.Response.ExceptionCode)
                 {
                     case ExceptionCodeEnum.RequestWarehousePassword:
-                        await NavigationService.NavigateAsync("RequestWarehousePasswordInputPopupPage");
+                        await NavigationService.NavigateAsync("RequestWarehousePasswordInputPopupPage", new NavigationParameters()
+                        {
+                            {
+                                "CallBackData",
+                                new Dictionary<string, object>()
+                                {
+                                    { "Model", model }
+                                }
+                            }
+                        });
                         break;
                     case ExceptionCodeEnum.RequestUnitDestination:
-                        CallRequestUnitInputPopupPage();
+                        CallRequestUnitInputPopupPage(model);
                         break;
                     //case ExceptionCodeEnum.VehicleNotBoardingLanding:
                     //case ExceptionCodeEnum.VehicleInBoardingPaused:
@@ -281,10 +306,6 @@ namespace TmsCollectorAndroid.ViewModels
                                 new CancelBillOfLadingBoardingModel(model.PackingListId, model.BarCode,
                                     model.MacAddress, model.IsJointUnit));
                         }
-                        else
-                        {
-                            Model.Reading = String.Empty;
-                        }
                         break;
                     //case ExceptionCodeEnum.PackNotFoundWarehouse:
                     //    //if (await ShowQuestionDialogSpeech(readingPackBoarding.Response?.ExceptionMessage))
@@ -308,9 +329,6 @@ namespace TmsCollectorAndroid.ViewModels
                                   readingPackBoarding.Error.ErrorDescription;
                         if (!string.IsNullOrEmpty(msg.Trim()))
                             await _notificationService.NotifyAsync(msg, SoundEnum.Erros);
-
-                        Model.Reading = String.Empty;
-                        Model.ReadingFocus();
                         break;
                 }
             }
@@ -434,15 +452,132 @@ namespace TmsCollectorAndroid.ViewModels
             }
         }
 
+        private async Task ReadingTransportAccessory(ReadingTransportAccessoryModel model)
+        {
+            HttpRequestResult<PackingListViewInfoModel> packingListViewInfo = null;
+
+            if (_userService.User.Unit.IsJointUnit)
+            {
+                packingListViewInfo = await _boardingService.ReadingTransportAccessory(
+                    new TmsApi.Models.Requests.ReadingTransportAccessoryModel(model.PackingListId,
+                        model.TrafficScheduleDetailId, model.TextBoxBarCode, model.TeamId, model.UnitLocal,
+                        model.UnitDestinationId, _wifiService.MacAddress, model.IsJointUnit));
+            }
+            else
+            {
+                packingListViewInfo = await _boardingService.ReadingPackingListTransportAccessory(
+                    new ReadingPackingListTransportAccessoryModel(model.PackingListId, model.TrafficScheduleDetailId,
+                        model.TextBoxBarCode, model.TeamId, model.UnitLocal, model.UnitDestinationId, _wifiService.MacAddress, model.RequiresSeal));
+            }
+
+            if (packingListViewInfo.Response != null && packingListViewInfo.Response.Valid)
+            {
+                Model.PackAmount = packingListViewInfo.Response.TotalBillOfLading.ToString();
+                Model.PackReading = packingListViewInfo.Response.TotalPack.ToString();
+
+                if (_userService.User.Unit.IsJointUnit)
+                    Model.PackingListViewInfo.TransportAccessoriesAmount =
+                        packingListViewInfo.Response.TransportAccessoriesAmount;
+            }
+            else if (packingListViewInfo.Response != null)
+            {
+                switch (packingListViewInfo.Response.ExceptionCode)
+                {
+                    case ExceptionCodeEnum.VehicleNotBoardingLanding:
+                    case ExceptionCodeEnum.VehicleInLandingPaused:
+                        if (await _notificationService.AskQuestionAsync(
+                            packingListViewInfo.Response.ExceptionMessage + "\r\nDeseja iniciar embarque?", SoundEnum.Alert))
+                        {
+                            var startingBoarding = await _boardingService.StartingBoarding(
+                                new StartingBoardingModel(Model.VehicleViewInfo.OperationalControlId,
+                                    _userService.User.Unit.Id, Model.VehicleViewInfo.TrafficScheduleDetailId,
+                                    Model.TeamViewInfo.Code, false));
+                            if (startingBoarding.Response != null && startingBoarding.Response.Valid)
+                            {
+                                Model.VehicleViewInfo.OperationalControlId =
+                                    startingBoarding.Response.OperationalControlId;
+
+                                if (!string.IsNullOrEmpty(model.TextBoxBarCode))
+                                {
+                                    await ReadingTransportAccessory(new ReadingTransportAccessoryModel(model.TeamCode,
+                                        model.PackingListId, model.TrafficScheduleDetailId, model.UnitLocal,
+                                        model.UnitDestinationId, model.TextBoxBarCode, model.TeamId, model.PackAmount,
+                                        model.PackAmountReading, model.IsJointUnit, true));
+                                }
+                            }
+                            else if (startingBoarding.Response != null)
+                            {
+                                await _notificationService.NotifyAsync(startingBoarding.Response.ExceptionMessage,
+                                    SoundEnum.Erros);
+                            }
+                            else
+                            {
+                                await _notificationService.NotifyAsync("Não foi possível concluir a requisição.", SoundEnum.Alert);
+                            }
+                        }
+
+                        break;
+                    case ExceptionCodeEnum.PackRead:
+                        if (await _notificationService.AskQuestionAsync(
+                                packingListViewInfo.Response.ExceptionMessage +
+                                "Deseja estornar o acessório registrado na leitura atual?", SoundEnum.Alert))
+                        {
+                            CallConfirmationRandomPopupPage(RemovePackingListTransportAccessory,
+                                new RemovePackingListTransportAccessoryModel(model.PackingListId, model.TextBoxBarCode,
+                                    model.UnitDestinationId, _wifiService.MacAddress));
+                        }
+
+                        break;
+                    case ExceptionCodeEnum.SealWarning:
+                        await _notificationService.NotifyAsync(packingListViewInfo.Response.ExceptionMessage, SoundEnum.Alert);
+
+                        await NavigationService.NavigateAsync("MaintenanceSealsInputPage",
+                            new NavigationParameters()
+                            {
+                                { "Title", "Solicitação" },
+                                {
+                                    "MaintenanceSealsInputModel",
+                                    new MaintenanceSealsInputModel()
+                                    {
+                                        OnlyConference = true,
+                                        PackingListAccessoryId = packingListViewInfo.Response.TransportAccessoryId,
+                                        TransportAccessoryDoors = packingListViewInfo.Response.TransportAccessoryDoors
+                                    }
+                                },
+                                { "CallBackData", new Dictionary<string, object>() {{ "Model", model }} }
+                            }
+                        );
+                        break;
+                    case ExceptionCodeEnum.RequestUnitDestination:
+                        CallRequestUnitInputPopupPage(model);
+                        break;
+                    default:
+                        await _notificationService.NotifyAsync(packingListViewInfo.Response.ExceptionMessage, SoundEnum.Erros);
+                        break;
+                }
+            }
+            else
+            {
+                await _notificationService.NotifyAsync("Não foi possível concluir a requisição.", SoundEnum.Alert);
+            }
+        }
+
         #endregion
 
         #region Popups Calls
-        private async void CallRequestUnitInputPopupPage()
+        private async void CallRequestUnitInputPopupPage(object model)
         {
             await NavigationService.NavigateAsync("RequestUnitInputPopupPage", new NavigationParameters()
             {
                 { "Text", "Unidade Próximo Destino" },
-                { "ValidUnitType", ValidUnitTypeEnum.Destination }
+                { "ValidUnitType", ValidUnitTypeEnum.Destination },
+                {
+                    "CallBackData",
+                    new Dictionary<string, object>()
+                    {
+                        { "Model", model }
+                    }
+                }
             });
         }
 
@@ -469,6 +604,7 @@ namespace TmsCollectorAndroid.ViewModels
         {
             if (confirmed)
             {
+                Model.SetPropertiesFromVehicleViewInfo();
                 await SetPackingListBoarding();
             }
             else
@@ -478,13 +614,14 @@ namespace TmsCollectorAndroid.ViewModels
             }
         }
 
-        private void WarehousePasswordInputConfirmed(bool confirmed, string warehousePassword, int warehousePasswordId)
+        private void WarehousePasswordInputConfirmed(bool confirmed, string warehousePassword, int warehousePasswordId, Dictionary<string, object> callBackData)
         {
-            if (confirmed)
+            if (confirmed
+            && callBackData.TryGetValue("Model", out object model))
             {
                 Model.WarehousePassword = warehousePassword;
                 Model.WarehousePasswordId = warehousePasswordId;
-                CallRequestUnitInputPopupPage();
+                CallRequestUnitInputPopupPage(model);
             }
             else
             {
@@ -492,23 +629,29 @@ namespace TmsCollectorAndroid.ViewModels
             }
         }
 
-        private async void RequestUnitInputConfirmed(bool confirmed, UnitViewInfoModel unitDestinationViewInfo)
+        private async void RequestUnitInputConfirmed(bool confirmed, UnitViewInfoModel unitDestinationViewInfo, Dictionary<string, object> callBackData)
         {
             Model.UnitDestinationViewInfo = unitDestinationViewInfo;
-            if (confirmed)
+            if (confirmed
+            && callBackData.TryGetValue("Model", out object objModel))
             {
-                ReadingPackBoarding(new ReadingPackBoardingModel(false,
-                    Model.TrafficScheduleDetailId, Model.TeamViewInfo.Id, Model.TrafficScheduleDetailVersionId, Model.TrafficScheduleDetailSequence,
-                    Model.PackingListViewInfo.Id, _userService.User.Unit.Id, Model.UnitDestinationViewInfo.Id, Model.Reading,
-                    _wifiService.MacAddress, _userService.User.Unit.IsJointUnit, false, Model.WarehousePasswordId, true));
+                if (objModel is ReadingPackBoardingModel)
+                {
+                    var model = objModel as ReadingPackBoardingModel;
+                    ReadingPackBoarding(model);
+                }
+                else if (objModel is ReadingTransportAccessoryModel)
+                {
+                    var model = objModel as ReadingTransportAccessoryModel;
+                    ReadingTransportAccessory(new ReadingTransportAccessoryModel(model.TeamCode, model.PackingListId,
+                        model.TrafficScheduleDetailId, model.UnitLocal, unitDestinationViewInfo.Id,
+                        model.TextBoxBarCode, model.TeamId, model.PackAmount, model.PackAmountReading,
+                        model.IsJointUnit, model.RequiresSeal));
+                }
             }
-            else
-            {
-                Model.ClearModelAfterTeam();
-
-                if (!string.IsNullOrEmpty(Model.WarehousePassword))
+            else if (!string.IsNullOrEmpty(Model.WarehousePassword))
                     await _commonService.ReleaseWarehousePassword(Model.WarehousePassword);
-            }
+            
         }
 
         private void ConfirmationRandomConfirmed(bool confirmed, Dictionary<string, object> callBackData)
@@ -520,6 +663,7 @@ namespace TmsCollectorAndroid.ViewModels
                 {
                     var cancelPackBoarding = action as Action<CancelPackBoardingModel>;
                     var cancelBillOfLadingBoarding = action as Action<CancelBillOfLadingBoardingModel>;
+                    var removePackingListTransportAccessory = action as Action<RemovePackingListTransportAccessoryModel>;
                     var endingProcess = action as Action<EndingBoardingModel>;
                     var defaultAction = action as Action;
 
@@ -534,6 +678,12 @@ namespace TmsCollectorAndroid.ViewModels
                         var cancelBillOfLadingBoardingModel = (CancelBillOfLadingBoardingModel) model;
 
                         cancelBillOfLadingBoarding(cancelBillOfLadingBoardingModel);
+                    }
+                    else if (removePackingListTransportAccessory != null)
+                    {
+                        var removePackingListTransportAccessoryModel =
+                            (RemovePackingListTransportAccessoryModel) model;
+                        removePackingListTransportAccessory(removePackingListTransportAccessoryModel);
                     }
                     else if (endingProcess != null)
                     {
@@ -551,6 +701,18 @@ namespace TmsCollectorAndroid.ViewModels
             {
                 Model.Reading = String.Empty;
                 Model.ReadingFocus();
+            }
+        }
+
+        private void MaintenanceSealsInputConfirmed(bool confirmed, Dictionary<string, object> callBackData)
+        {
+            if (confirmed 
+            && callBackData != null
+            && callBackData.TryGetValue("Model", out ReadingTransportAccessoryModel model))
+            {
+                ReadingTransportAccessory(new ReadingTransportAccessoryModel(model.TeamCode, model.PackingListId,
+                    model.TrafficScheduleDetailId, model.UnitLocal, model.UnitDestinationId, model.TextBoxBarCode,
+                    model.TeamId, model.PackAmount, model.PackAmountReading, model.IsJointUnit, false));
             }
         }
 
@@ -582,6 +744,25 @@ namespace TmsCollectorAndroid.ViewModels
                     SoundEnum.Erros);
             else
                 await SetPackingListBoarding();
+        }
+
+        public Action<RemovePackingListTransportAccessoryModel> RemovePackingListTransportAccessory;
+
+        private async void ExecuteRemovePackingListTransportAccessory(RemovePackingListTransportAccessoryModel model)
+        {
+            var packingListViewInfo = await _boardingService.RemovePackingListTransportAccessory(model);
+            
+            if (packingListViewInfo.Response != null && packingListViewInfo.Response.Valid)
+            {
+                Model.PackAmount = packingListViewInfo.Response.TotalBillOfLading.ToString();
+                Model.PackReading = packingListViewInfo.Response.TotalPack.ToString();
+
+                if (_userService.User.Unit.IsJointUnit)
+                    Model.PackingListViewInfo.TransportAccessoriesAmount = packingListViewInfo.Response.TransportAccessoriesAmount;
+
+                Model.Reading = String.Empty;
+                Model.ReadingFocus();
+            }
         }
 
         public Action PauseBoarding;
@@ -664,6 +845,10 @@ namespace TmsCollectorAndroid.ViewModels
 
         #region Menu Commands
 
+        private DelegateCommand _packingListAccessoriesInputCommand;
+        public DelegateCommand PackingListAccessoriesInputCommand =>
+            _packingListAccessoriesInputCommand ?? (_packingListAccessoriesInputCommand = new DelegateCommand(PackingListAccessoriesInputCommandHandler));
+
         private DelegateCommand _viewLackCommand;
         public DelegateCommand ViewLackCommand =>
             _viewLackCommand ?? (_viewLackCommand = new DelegateCommand(ViewLackCommandHandler));
@@ -700,7 +885,11 @@ namespace TmsCollectorAndroid.ViewModels
 
             if (!string.IsNullOrEmpty(Model.Team))
             {
+                await _popupNavigation.PushAsync(new LoadingPopupPage());
+
                 var team = await _commonService.ValidTeam(_userService.User.Unit.Id, Model.Team);
+
+                await _popupNavigation.PopAllAsync();
 
                 Model.TeamViewInfo = team.Response;
 
@@ -754,10 +943,28 @@ namespace TmsCollectorAndroid.ViewModels
                     Model.TrafficScheduleDetailSequence = Model.VehicleViewInfo.TrafficScheduleDetailSequence;
                 }
 
-                ReadingPackBoarding(new ReadingPackBoardingModel(false,
-                    Model.TrafficScheduleDetailId, Model.TeamViewInfo.Id, Model.TrafficScheduleDetailVersionId, Model.TrafficScheduleDetailSequence,
-                    Model.PackingListViewInfo.Id, _userService.User.Unit.Id, -1, Model.Reading,
-                    _wifiService.MacAddress, _userService.User.Unit.IsJointUnit, false, 0, true));
+                if (_labelValidationService.ValidateCommonLabel(Model.Reading))
+                {
+                    ReadingPackBoarding(new ReadingPackBoardingModel(false,
+                        Model.TrafficScheduleDetailId, Model.TeamViewInfo.Id, Model.TrafficScheduleDetailVersionId,
+                        Model.TrafficScheduleDetailSequence,
+                        Model.PackingListViewInfo.Id, _userService.User.Unit.Id, -1, Model.Reading,
+                        _wifiService.MacAddress, _userService.User.Unit.IsJointUnit, false, 0, true));
+                }
+                else if(_labelValidationService.ValidateMotherLabel(Model.Reading))
+                {
+                    ReadingTransportAccessory(new ReadingTransportAccessoryModel(Model.TeamViewInfo.Code,
+                        Model.PackingListViewInfo.Id, Model.TrafficScheduleDetailId,
+                        _userService.User.Unit.Id, -1, Model.Reading, Model.TeamViewInfo.Id, Model.PackAmount,
+                        Model.PackReading, _userService.User.Unit.IsJointUnit, true));
+                }
+                else
+                {
+                    await _notificationService.NotifyAsync("Tipo de código de barras não identificado.", SoundEnum.Alert);
+                }
+
+                Model.Reading = String.Empty;
+                Model.ReadingFocus();
             }
             else
             {
@@ -795,6 +1002,11 @@ namespace TmsCollectorAndroid.ViewModels
         }
 
         #region Menu Command Handleres
+
+        private async void PackingListAccessoriesInputCommandHandler()
+        {
+            await NavigationService.NavigateAsync("PackingListAccessoriesInputPage");
+        }
 
         private async void ViewLackCommandHandler()
         {

@@ -54,11 +54,10 @@ namespace TmsCollectorAndroid.TmsApi.Services
                 $"{ApiController}/reading-packing-list-transport-accessory", model);
         }
 
-        public async Task<HttpRequestResult<PackingListViewInfoModel>> RemovePackingListTransportAccessory(
-            int packingListId, string cobolNumber, int unitSendId, MacAddressModel macAddress)
+        public async Task<HttpRequestResult<PackingListViewInfoModel>> RemovePackingListTransportAccessory(RemovePackingListTransportAccessoryModel model)
         {
-            return await DeleteAsyncReceiveData<PackingListViewInfoModel>(
-                $"{ApiController}/remove-packing-list-transport-accessory/{packingListId}/{cobolNumber}/{unitSendId}/{macAddress}");
+            return await PutAsyncReceiveData<PackingListViewInfoModel, RemovePackingListTransportAccessoryModel>(
+                $"{ApiController}/remove-packing-list-transport-accessory", model);
         }
 
         public async Task<HttpRequestResult<PackingListViewInfoModel>> CancelPackBoarding(CancelPackBoardingModel model)

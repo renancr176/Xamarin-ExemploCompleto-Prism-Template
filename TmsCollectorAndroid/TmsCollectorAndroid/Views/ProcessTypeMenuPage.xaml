@@ -34,7 +34,7 @@
                      HorizontalOptions="CenterAndExpand">
             <Button Text="Voltar" 
                     Style="{StaticResource BtnInfo}"
-                    Command="{Binding VoltarCommand}"/>
+                    Command="{Binding GoBackCommand}"/>
         </StackLayout>
     </StackLayout>
 

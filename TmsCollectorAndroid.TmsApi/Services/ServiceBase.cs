@@ -17,7 +17,6 @@ namespace TmsCollectorAndroid.TmsApi.Services
         public static int CompanyId { get; private set; }
         public static string Username { get; private set; }
         public static string Password { get; private set; }
-        public static bool SetToClose { get; private set; }
 
         private static Url _apiUrl;
         public Url ApiUrl
@@ -92,7 +91,6 @@ namespace TmsCollectorAndroid.TmsApi.Services
                             CompanyId,
                             Username,
                             Password,
-                            SetToClose,
                             grant_type = "password"
                         }
                     )
@@ -104,7 +102,7 @@ namespace TmsCollectorAndroid.TmsApi.Services
             }
         }
 
-        public async Task<AuthenticationResponseModel> Authenticate(int companyId, string username, string password, bool setToClose)
+        public async Task<AuthenticationResponseModel> Authenticate(int companyId, string username, string password)
         {
             if (ApiUrl != null && ApiUrl.IsValid())
             {
@@ -118,7 +116,6 @@ namespace TmsCollectorAndroid.TmsApi.Services
                                 companyId,
                                 username,
                                 password,
-                                setToClose,
                                 grant_type = "password"
                             }
                         )
@@ -135,7 +132,6 @@ namespace TmsCollectorAndroid.TmsApi.Services
                         CompanyId = companyId;
                         Username = username;
                         Password = password;
-                        SetToClose = setToClose;
 
                         return new AuthenticationResponseModel(true);
                     }
@@ -163,7 +159,6 @@ namespace TmsCollectorAndroid.TmsApi.Services
                 CompanyId = 0;
                 Username = String.Empty;
                 Password = String.Empty;
-                SetToClose = false;
             }
         }
 

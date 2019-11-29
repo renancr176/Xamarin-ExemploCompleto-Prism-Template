@@ -147,7 +147,7 @@ namespace TmsCollectorAndroid.Views.Controls
             set => SetValue(SecondButtonCommandProperty, value);
         }
 
-        private void SecondButtonFocus()
+        public void SecondButtonFocus()
         {
             SecondButton.Focus();
         }

@@ -6,6 +6,7 @@
 	<Application.Resources>
 
         <ResourceDictionary>
+            <Color x:Key="ColorDefault">#CEE7EF</Color>
             <!--region Disabled Inputs Effect-->
             <Style TargetType="Entry">
                 <Style.Triggers>
